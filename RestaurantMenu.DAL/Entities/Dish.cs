@@ -14,13 +14,13 @@ namespace RestaurantMenu.DAL.Entities
         [Column(TypeName = "varchar(255)")]
         public string Name { get; set; }
 
-        [Column(TypeName = "varchar(1000)")]
+        [Column(TypeName = "varchar(max)")]
         public string Composition { get; set; }
 
-        [Column(TypeName = "varchar(1000)")]
+        [Column(TypeName = "varchar(500)")]
         public string Description { get; set; }
 
-        [Column(TypeName = "smallmoney")]
+        [Column(TypeName = "decimal[(9[8, 2])]")] 
         public decimal Price { get; set; }
 
         public int Mass { get; set; }
