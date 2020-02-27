@@ -4,6 +4,15 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RestaurantMenu.BLL\RestaurantMenu.BLL.csproj" />
+    <ProjectReference Include="..\RestaurantMenu.DAL\RestaurantMenu.DAL.csproj" />
+  </ItemGroup>
+
 
 
 </Project>

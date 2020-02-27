@@ -1,0 +1,7 @@
+D:\My data\Develop\SimbirSoft inetrnship 2020\Restaurant-menu project\RestaurantMenu\RestaurantMenu.DAL\bin\Debug\netcoreapp3.1\RestaurantMenu.DAL.deps.json
+D:\My data\Develop\SimbirSoft inetrnship 2020\Restaurant-menu project\RestaurantMenu\RestaurantMenu.DAL\bin\Debug\netcoreapp3.1\RestaurantMenu.DAL.dll
+D:\My data\Develop\SimbirSoft inetrnship 2020\Restaurant-menu project\RestaurantMenu\RestaurantMenu.DAL\obj\Debug\netcoreapp3.1\RestaurantMenu.DAL.csprojAssemblyReference.cache
+D:\My data\Develop\SimbirSoft inetrnship 2020\Restaurant-menu project\RestaurantMenu\RestaurantMenu.DAL\obj\Debug\netcoreapp3.1\RestaurantMenu.DAL.AssemblyInfoInputs.cache
+D:\My data\Develop\SimbirSoft inetrnship 2020\Restaurant-menu project\RestaurantMenu\RestaurantMenu.DAL\obj\Debug\netcoreapp3.1\RestaurantMenu.DAL.AssemblyInfo.cs
+D:\My data\Develop\SimbirSoft inetrnship 2020\Restaurant-menu project\RestaurantMenu\RestaurantMenu.DAL\bin\Debug\netcoreapp3.1\RestaurantMenu.DAL.runtimeconfig.json
+D:\My data\Develop\SimbirSoft inetrnship 2020\Restaurant-menu project\RestaurantMenu\RestaurantMenu.DAL\bin\Debug\netcoreapp3.1\RestaurantMenu.DAL.runtimeconfig.dev.json
