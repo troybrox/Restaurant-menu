@@ -20,12 +20,13 @@ namespace RestaurantMenu.DAL.Entities
         [Column(TypeName = "varchar(500)")]
         public string Description { get; set; }
 
-        [Column(TypeName = "decimal[(9[8, 2])]")] 
+        [Column(TypeName = "decimal(8, 2)")] 
         public decimal Price { get; set; }
 
         public int Mass { get; set; }
 
-        public int CaloricContent { get; set; }
+        [Column(TypeName = "decimal(8, 2)")]
+        public decimal CalorieContent { get; set; }
 
         public int CookingTime { get; set; }
     }
