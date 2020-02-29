@@ -29,7 +29,11 @@
         },
         "frameworks": {
           "netcoreapp3.1": {
-            "projectReferences": {}
+            "projectReferences": {
+              "D:\\My data\\Develop\\SimbirSoft inetrnship 2020\\Restaurant-menu project\\RestaurantMenu\\RestaurantMenu.DAL\\RestaurantMenu.DAL.csproj": {
+                "projectPath": "D:\\My data\\Develop\\SimbirSoft inetrnship 2020\\Restaurant-menu project\\RestaurantMenu\\RestaurantMenu.DAL\\RestaurantMenu.DAL.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
