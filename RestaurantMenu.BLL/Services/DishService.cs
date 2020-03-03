@@ -36,14 +36,42 @@ namespace RestaurantMenu.BLL.Services
             }
         }
 
-        public Task<OperationDetail> DeleteAsync(int id)
+        public async Task<OperationDetail> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Dish entity = await _context.Dishes.FindAsync(id);
+                _context.Dishes.Remove(entity);
+                await _context.SaveChangesAsync();
+                return new OperationDetail { Succeeded = true };
+            }
+            catch(Exception e)
+            {
+                return new OperationDetail { Succeeded = false, Message = e.Message };
+            }
         }
 
-        public Task<OperationDetail> EditAsync(int id, DishDTO dto)
+        public async Task<OperationDetail> EditAsync(int id, DishDTO dto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Dish entity = await _context.Dishes.FindAsync(id);
+                entity.Name = dto.Name;
+                entity.AddingDate = dto.AddingDate;
+                entity.Price = dto.Price;
+                entity.Composition = dto.Composition;
+                entity.Mass = dto.Mass;
+                entity.CalorieContent = dto.CalorieContent;
+                entity.CookingTime = dto.CookingTime;
+                entity.Description = dto.Description;
+                _context.Dishes.Update(entity);
+                await _context.SaveChangesAsync();
+                return new OperationDetail { Succeeded = true };
+            }
+            catch (Exception e)
+            {
+                return new OperationDetail { Succeeded = false, Message = e.Message };
+            }
         }
 
         public async Task<(OperationDetail, List<DishDTO>)> GetAllFromDBAsync()
@@ -76,9 +104,31 @@ namespace RestaurantMenu.BLL.Services
             }
         }
 
-        public Task<(OperationDetail, DishDTO)> GetByIDAsync(int id)
+        public async Task<(OperationDetail, DishDTO)> GetByIDAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Dish entity = await _context.Dishes.FirstOrDefaultAsync(d => d.Id == id); ;
+                return (
+                    new OperationDetail { Succeeded = true },
+                    new DishDTO
+                    {
+                        Id = entity.Id,
+                        Name = entity.Name,
+                        AddingDate = entity.AddingDate,
+                        Price = entity.Price,
+                        Composition = entity.Composition,
+                        Mass = entity.Mass,
+                        CalorieContent = entity.CalorieContent,
+                        CookingTime = entity.CookingTime,
+                        Description = entity.Description
+                    }
+                );
+            }
+            catch (Exception ex)
+            {
+                return (new OperationDetail { Succeeded = false, Message = ex.Message }, null);
+            }
         }
 
 

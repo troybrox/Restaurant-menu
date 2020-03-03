@@ -11,6 +11,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using RestaurantMenu.DAL;
 using RestaurantMenu.DAL.Data;
+using RestaurantMenu.BLL.Interfaces;
+using RestaurantMenu.BLL.Services;
 
 
 namespace RestaurantMenu
@@ -28,10 +30,14 @@ namespace RestaurantMenu
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddRazorPages();
+            //services.AddRazorPages();
 
             services.AddDbContextPool<MenuDBContext>( optionsBuiller =>
             optionsBuiller.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddControllers();
+
+            services.AddTransient<IDishService, DishService>();
 
         }
 
@@ -51,14 +57,14 @@ namespace RestaurantMenu
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                //endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
 
         }
