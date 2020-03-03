@@ -17,10 +17,6 @@
     <ProjectReference Include="..\RestaurantMenu.DAL\RestaurantMenu.DAL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="App\" />
-  </ItemGroup>
-
 
 
 </Project>
