@@ -22,7 +22,7 @@ namespace RestaurantMenu.Controllers
 
         // GET: api/Menu
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DishDTO>>> Get()
+        public async Task<ActionResult<IEnumerable<DishDTO>>> GetDishes()
         {
             var res = await _dishService.GetAllFromDBAsync();
             if (res.Item1.Succeeded)
@@ -33,24 +33,46 @@ namespace RestaurantMenu.Controllers
 
         // GET: api/Menu/5
         [HttpGet("{id}", Name = "Get")]
-        public async Task<ActionResult<DishDTO>> Get(int id)
+        public async Task<ActionResult<DishDTO>> GetDish(int id)
         {
             var res = await _dishService.GetByIDAsync(id);
             if (res.Item1.Succeeded)
                 return new ObjectResult(res.Item2);
             else
-                return NotFound(res.Item1);
+                return NotFound(res.Item1.Message);
         }
 
         // POST: api/Menu
         [HttpPost]
-        public async Task<ActionResult<DishDTO>> Post(DishDTO dto)
+        public async Task<ActionResult<DishDTO>> AddDish(DishDTO dto)
         {
             if (dto == null)
                 return BadRequest();
             var res = await _dishService.AddNewToDBAsync(dto);
             if (res.Succeeded)
-                return Ok(dto);
+                return Ok(); // return ?? ok(dto) ??
+            else
+                return BadRequest(res.Message);
+        }
+
+        // POST: api/Menu
+        [HttpPost]
+        public async Task<ActionResult<DishDTO>> DeleteDish(int id) // name ??
+        {
+            var res = await _dishService.DeleteAsync(id);
+            if (res.Succeeded)
+                return Ok();
+            else
+                return BadRequest(res.Message); // NotFound() ??
+        }
+
+        // POST: api/Menu
+        [HttpPost]
+        public async Task<ActionResult<DishDTO>> EditDish(int id, DishDTO dto)
+        {
+            var res = await _dishService.EditAsync(id, dto);    // check if(dto == null) ?? 
+            if (res.Succeeded)
+                return Ok();
             else
                 return BadRequest(res.Message);
         }
