@@ -28,7 +28,7 @@ namespace RestaurantMenu.Controllers
             if (res.Item1.Succeeded)
                 return res.Item2;
             else
-                return BadRequest(res.Item1.Message);
+                return BadRequest(res.Item1.Message); // -
         }
 
         // GET: api/Menu/5
@@ -44,6 +44,7 @@ namespace RestaurantMenu.Controllers
 
         // POST: api/Menu
         [HttpPost]
+        [Route("add-dish")]
         public async Task<ActionResult<DishDTO>> AddDish(DishDTO dto)
         {
             if (dto == null)
@@ -55,8 +56,10 @@ namespace RestaurantMenu.Controllers
                 return BadRequest(res.Message);
         }
 
+        
         // POST: api/Menu
         [HttpPost]
+        [Route("delete-dish")]
         public async Task<ActionResult<DishDTO>> DeleteDish(int id) // name ??
         {
             var res = await _dishService.DeleteAsync(id);
@@ -68,6 +71,7 @@ namespace RestaurantMenu.Controllers
 
         // POST: api/Menu
         [HttpPost]
+        [Route("edit-dish")]
         public async Task<ActionResult<DishDTO>> EditDish(int id, DishDTO dto)
         {
             var res = await _dishService.EditAsync(id, dto);    // check if(dto == null) ?? 
@@ -76,5 +80,6 @@ namespace RestaurantMenu.Controllers
             else
                 return BadRequest(res.Message);
         }
+        
     }
 }
