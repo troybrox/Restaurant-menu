@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantMenu.BLL.DTO;
 using RestaurantMenu.BLL.Interfaces;
+using RestaurantMenu.BLL.Infrastructure;
 
 namespace RestaurantMenu.Controllers
 {
@@ -13,9 +14,9 @@ namespace RestaurantMenu.Controllers
     [ApiController]
     public class MenuController : ControllerBase
     {
-        private readonly IDishService _dishService;
+        private readonly IDishService<OperationDetail> _dishService;
 
-        public MenuController(IDishService dishService)
+        public MenuController(IDishService<OperationDetail> dishService)
         {
             _dishService = dishService;
         }
@@ -28,7 +29,7 @@ namespace RestaurantMenu.Controllers
             if (res.Item1.Succeeded)
                 return res.Item2;
             else
-                return BadRequest(res.Item1.Message); // -
+                return Ok(res.Item1); 
         }
 
         // GET: api/Menu/5
@@ -37,9 +38,9 @@ namespace RestaurantMenu.Controllers
         {
             var res = await _dishService.GetByIDAsync(id);
             if (res.Item1.Succeeded)
-                return new ObjectResult(res.Item2);
+                return res.Item2;
             else
-                return NotFound(res.Item1.Message);
+                return Ok(res.Item1);
         }
 
         // POST: api/Menu
@@ -48,25 +49,19 @@ namespace RestaurantMenu.Controllers
         public async Task<ActionResult<DishDTO>> AddDish(DishDTO dto)
         {
             if (dto == null)
-                return BadRequest();
+                return BadRequest(); // ?
             var res = await _dishService.AddNewToDBAsync(dto);
-            if (res.Succeeded)
-                return Ok(); // return ?? ok(dto) ??
-            else
-                return BadRequest(res.Message);
+            return Ok(res);
         }
 
         
         // POST: api/Menu
         [HttpPost]
         [Route("delete-dish")]
-        public async Task<ActionResult<DishDTO>> DeleteDish(int id) // name ??
+        public async Task<ActionResult<DishDTO>> DeleteDish(int id)
         {
             var res = await _dishService.DeleteAsync(id);
-            if (res.Succeeded)
-                return Ok();
-            else
-                return BadRequest(res.Message); // NotFound() ??
+            return Ok(res);
         }
 
         // POST: api/Menu
@@ -75,11 +70,7 @@ namespace RestaurantMenu.Controllers
         public async Task<ActionResult<DishDTO>> EditDish(int id, DishDTO dto)
         {
             var res = await _dishService.EditAsync(id, dto);    // check if(dto == null) ?? 
-            if (res.Succeeded)
-                return Ok();
-            else
-                return BadRequest(res.Message);
+            return Ok(res);
         }
-        
     }
 }

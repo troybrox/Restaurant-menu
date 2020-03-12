@@ -13,7 +13,7 @@ using RestaurantMenu.DAL.Entities;
 
 namespace RestaurantMenu.BLL.Services
 {
-    public class DishService : IDishService
+    public class DishService : IDishService<OperationDetail>
     {
         private MenuDBContext _context;
 
