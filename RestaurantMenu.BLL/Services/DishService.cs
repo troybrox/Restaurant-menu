@@ -13,7 +13,7 @@ using RestaurantMenu.DAL.Entities;
 
 namespace RestaurantMenu.BLL.Services
 {
-    public class DishService : IDishService<OperationDetail>
+    public class DishService : IDishService
     {
         private MenuDBContext _context;
 
@@ -74,7 +74,7 @@ namespace RestaurantMenu.BLL.Services
             }
         }
 
-        public async Task<(OperationDetail, List<DishDTO>)> GetAllFromDBAsync()
+        public async Task<OperationDetail<List<DishDTO>>> GetAllFromDBAsync()
         {
             try
             {
@@ -96,38 +96,43 @@ namespace RestaurantMenu.BLL.Services
                             Description = entity.Description
                         });
                 }
-                return (new OperationDetail { Succeeded = true }, dtoList);
+                return (new OperationDetail<List<DishDTO>> { Succeeded = true, Data = dtoList });
             }
             catch(Exception e)
             {
-                return (new OperationDetail { Succeeded = false, Message = "Ошибка при получении списка блюд из базы данных:\n" + e.Message }, null);
+                return (new OperationDetail<List<DishDTO>> { Succeeded = false, Message = "Ошибка при получении списка блюд из базы данных:\n" + e.Message });
             }
         }
 
-        public async Task<(OperationDetail, DishDTO)> GetByIDAsync(int id)
+        public async Task<OperationDetail<DishDTO>> GetByIDAsync(int id)
         {
             try
             {
-                Dish entity = await _context.Dishes.FirstOrDefaultAsync(d => d.Id == id); ;
+                Dish entity = await _context.Dishes.FirstOrDefaultAsync(d => d.Id == id); 
+                if(entity == null)
+                    return new OperationDetail<DishDTO> { Succeeded = false, Message = "Блюдо не найдено." };
                 return (
-                    new OperationDetail { Succeeded = true },
-                    new DishDTO
-                    {
-                        Id = entity.Id,
-                        Name = entity.Name,
-                        AddingDate = entity.AddingDate,
-                        Price = entity.Price,
-                        Composition = entity.Composition,
-                        Mass = entity.Mass,
-                        CalorieContent = entity.CalorieContent,
-                        CookingTime = entity.CookingTime,
-                        Description = entity.Description
+                    new OperationDetail<DishDTO>
+                    { 
+                        Succeeded = true,
+                        Data = new DishDTO
+                        {
+                            Id = entity.Id,
+                            Name = entity.Name,
+                            AddingDate = entity.AddingDate,
+                            Price = entity.Price,
+                            Composition = entity.Composition,
+                            Mass = entity.Mass,
+                            CalorieContent = entity.CalorieContent,
+                            CookingTime = entity.CookingTime,
+                            Description = entity.Description
+                        }
                     }
                 );
             }
             catch (Exception ex)
             {
-                return (new OperationDetail { Succeeded = false, Message = ex.Message }, null);
+                return new OperationDetail<DishDTO> { Succeeded = false, Message = ex.Message };
             }
         }
 
