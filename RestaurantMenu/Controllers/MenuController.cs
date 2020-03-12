@@ -14,9 +14,9 @@ namespace RestaurantMenu.Controllers
     [ApiController]
     public class MenuController : ControllerBase
     {
-        private readonly IDishService<OperationDetail> _dishService;
+        private readonly IDishService _dishService;
 
-        public MenuController(IDishService<OperationDetail> dishService)
+        public MenuController(IDishService dishService)
         {
             _dishService = dishService;
         }
@@ -26,10 +26,7 @@ namespace RestaurantMenu.Controllers
         public async Task<ActionResult<IEnumerable<DishDTO>>> GetDishes()
         {
             var res = await _dishService.GetAllFromDBAsync();
-            if (res.Item1.Succeeded)
-                return res.Item2;
-            else
-                return Ok(res.Item1); 
+                return Ok(res); 
         }
 
         // GET: api/Menu/5
@@ -37,27 +34,23 @@ namespace RestaurantMenu.Controllers
         public async Task<ActionResult<DishDTO>> GetDish(int id)
         {
             var res = await _dishService.GetByIDAsync(id);
-            if (res.Item1.Succeeded)
-                return res.Item2;
-            else
-                return Ok(res.Item1);
+                return Ok(res);
         }
 
         // POST: api/Menu
         [HttpPost]
-        [Route("add-dish")]
-        public async Task<ActionResult<DishDTO>> AddDish(DishDTO dto)
+        [Route("dish/add")]
+        public async Task<IActionResult> AddDish(DishDTO dto)
         {
             if (dto == null)
-                return BadRequest(); // ?
+                return BadRequest(); 
             var res = await _dishService.AddNewToDBAsync(dto);
             return Ok(res);
         }
 
-        
         // POST: api/Menu
         [HttpPost]
-        [Route("delete-dish")]
+        [Route("dish/delete/{id}")]
         public async Task<ActionResult<DishDTO>> DeleteDish(int id)
         {
             var res = await _dishService.DeleteAsync(id);
@@ -66,10 +59,12 @@ namespace RestaurantMenu.Controllers
 
         // POST: api/Menu
         [HttpPost]
-        [Route("edit-dish")]
+        [Route("dish/edit/{id}")]
         public async Task<ActionResult<DishDTO>> EditDish(int id, DishDTO dto)
         {
-            var res = await _dishService.EditAsync(id, dto);    // check if(dto == null) ?? 
+            if (dto == null)
+                return BadRequest();
+            var res = await _dishService.EditAsync(id, dto);  
             return Ok(res);
         }
     }
