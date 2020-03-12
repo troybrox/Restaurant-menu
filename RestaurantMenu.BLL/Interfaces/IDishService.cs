@@ -7,12 +7,12 @@ using RestaurantMenu.BLL.DTO;
 
 namespace RestaurantMenu.BLL.Interfaces
 {
-    public interface IDishService
+    public interface IDishService<T>
     {
-        public Task<(OperationDetail, List<DishDTO>)> GetAllFromDBAsync();
-        public Task<(OperationDetail, DishDTO)> GetByIDAsync(int id);
-        public Task<OperationDetail> AddNewToDBAsync(DishDTO dto);
-        public Task<OperationDetail> EditAsync(int id, DishDTO dto);
-        public Task<OperationDetail> DeleteAsync(int id);
+        public Task<(T, List<DishDTO>)> GetAllFromDBAsync();
+        public Task<(T, DishDTO)> GetByIDAsync(int id);
+        public Task<T> AddNewToDBAsync(DishDTO dto);
+        public Task<T> EditAsync(int id, DishDTO dto);
+        public Task<T> DeleteAsync(int id);
     }
 }
