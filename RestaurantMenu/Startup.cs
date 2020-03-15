@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -15,8 +17,6 @@ using RestaurantMenu.BLL.Interfaces;
 using RestaurantMenu.BLL.Services;
 using RestaurantMenu.BLL.Infrastructure;
 
-
-
 namespace RestaurantMenu
 {
     public class Startup
@@ -27,20 +27,30 @@ namespace RestaurantMenu
         }
 
         public IConfiguration Configuration { get; }
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            //services.AddRazorPages();
-
             services.AddDbContextPool<MenuDBContext>( optionsBuiller =>
             optionsBuiller.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                builder =>
+                {
+                    builder.WithOrigins("https://localhost:44360", "http://localhost:44318", "https://localhost:44318")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+
+                });
+            });
 
             services.AddControllers();
 
             services.AddTransient<IDishService, DishService>();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,6 +67,17 @@ namespace RestaurantMenu
                 app.UseHsts();
             }
 
+            //app.UseCors(options =>
+            //    options.WithOrigins("https://localhost:44360", "http://localhost:44318", "https://localhost:44318")
+            //    .AllowAnyMethod()
+            //    .AllowAnyHeader()
+            //    .AllowCredentials()
+            //    );
+
+
+
+            app.UseCors(MyAllowSpecificOrigins);
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
@@ -67,8 +88,9 @@ namespace RestaurantMenu
             {
                 //endpoints.MapRazorPages();
                 endpoints.MapControllers();
-            });
-
+            });   
         }
     }
+
+    public class CorsMidlware { }
 }

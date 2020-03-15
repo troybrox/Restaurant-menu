@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.Net.Http.Headers;
 using RestaurantMenu.BLL.DTO;
 using RestaurantMenu.BLL.Interfaces;
 using RestaurantMenu.BLL.Infrastructure;
@@ -26,7 +28,7 @@ namespace RestaurantMenu.Controllers
         public async Task<ActionResult<IEnumerable<DishDTO>>> GetDishes()
         {
             var res = await _dishService.GetAllFromDBAsync();
-                return Ok(res); 
+            return Ok(res); 
         }
 
         // GET: api/Menu/5
