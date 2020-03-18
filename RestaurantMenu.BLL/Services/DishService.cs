@@ -277,6 +277,69 @@ namespace RestaurantMenu.BLL.Services
             throw new NotImplementedException();
         }
 
+        public async Task<OperationDetail<List<DishDTO>>> GetSortedListFromDBAsync_3(string sortOrder, string searchString)
+        {
+            try
+            {
+                var dtoList = new List<DishDTO>();
+                var dishes = from d in _context.Dishes select d;
+
+                string currentFilter = searchString;
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    dishes = dishes.Where(d => d.Name.ToUpper().Contains(searchString.ToUpper())
+                                           || d.Description.ToUpper().Contains(searchString.ToUpper())
+                                           || d.Composition.ToUpper().Contains(searchString.ToUpper()));
+                }
+
+                if (String.IsNullOrEmpty(sortOrder))
+                {
+                    sortOrder = "Name";
+                }
+
+                bool descending = false;
+
+                if (sortOrder.EndsWith("_desc"))
+                {
+                    sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
+                    descending = true;
+                }
+
+                if (descending)
+                {
+                    dishes = dishes.OrderByDescending(e => EF.Property<object>(e, sortOrder));
+                }
+                else
+                {
+                    dishes = dishes.OrderBy(e => EF.Property<object>(e, sortOrder));
+                }
+
+                foreach (Dish entity in await dishes.AsNoTracking().ToListAsync())
+                {
+                    dtoList.Add(
+                        new DishDTO
+                        {
+                            Id = entity.Id,
+                            Name = entity.Name,
+                            AddingDate = entity.AddingDate,
+                            Price = entity.Price,
+                            Composition = entity.Composition,
+                            Mass = entity.Mass,
+                            CalorieContent = entity.CalorieContent,
+                            CookingTime = entity.CookingTime,
+                            Description = entity.Description
+                        });
+                }
+
+                return (new OperationDetail<List<DishDTO>> { Succeeded = true, Data = dtoList });
+            }
+            catch (Exception e)
+            {
+                return (new OperationDetail<List<DishDTO>> { Succeeded = false, Message = "Ошибка при получении отсортированного списка блюд из базы данных:\n" + e.Message });
+            }
+            throw new NotImplementedException();
+        }
+
         private Dish GetEntityFromDTO(DishDTO dto)
         {
             return new Dish

@@ -71,6 +71,14 @@ else
 <div>
     <div>
         <h4 class="text-black-50">Меню блюд</h4>
+
+        <div class="form-actions no-color">
+            <p>
+                Найти:
+                <input type="text" name="SearchString" value="@searchString" />
+                <input value="Поиск" class="btn btn-primary" @onclick ="(async(e) => await FilterMenuByAsync(searchString))"/> 
+            </p>
+        </div>
     </div>
 </div>
     <body>
@@ -266,7 +274,7 @@ else
                                             </li>
                                             <li class="nav-item px-2">
                                                 <NavLink class="btn-link">
-                                                    <span class="oi oi-eye" @onclick="@(e => OpenDetail(dish.Id.ToString()))"></span>
+                                                    <span class="oi oi-eye" @onclick="@(async(e) => await OpenDetailAsync(dish.Id.ToString()))"></span>
                                                 </NavLink>
                                             </li>
                                         </ul>
@@ -290,7 +298,11 @@ else
 @code {
 
     [Parameter]
-    public string sortOrder { get; set; } = "Id";
+    public string sortOrder { get; set; } =  "Id";
+    [Parameter]
+    public string searchString { get; set; } = "";
+
+
     public string _indicateSort { get; set; }
 
     private string _sortIndLetterAsc { get; set; } = "А..Я";
@@ -311,16 +323,25 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        string uriPath = "https://localhost:44318/api/menu";
         RequestResult<List<DishViewModel>> requestResult;
 
+        //if (String.IsNullOrEmpty(sortOrder))
+        //{
+        //    requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>("https://localhost:44318/api/menu");
+        //}
+        //else
+        //{
+        //    requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>("https://localhost:44318/api/menu" + "/" + sortOrder);
+        //}
+
         if (String.IsNullOrEmpty(sortOrder))
-        {
-            requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>("https://localhost:44318/api/menu");
-        }
+        { }
         else
         {
-            requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>("https://localhost:44318/api/menu" + "/" + sortOrder);
+            uriPath = uriPath + "/" + sortOrder + "/" + searchString;
         }
+        requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>(uriPath);
 
         if (requestResult.Succeeded)
         {
@@ -380,7 +401,7 @@ else
         return (_sortIndicate);
     }
 
-    private void OpenDetail(string id)
+    private async Task OpenDetailAsync(string id)
     {
         navigationManager.NavigateTo("/menu/detail/" + id);
     }
@@ -416,6 +437,12 @@ else
 
         // sort-indicating
 
+        await OnInitializedAsync();
+    }
+
+    private async Task FilterMenuByAsync(string searchStringParameter)
+    {
+        searchString = searchStringParameter;
         await OnInitializedAsync();
     }
 

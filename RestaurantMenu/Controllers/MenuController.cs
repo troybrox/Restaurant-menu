@@ -32,11 +32,11 @@ namespace RestaurantMenu.Controllers
         }
 
         // GET: api/Menu
-        [HttpGet("{sortOrder}")]
-        public async Task<ActionResult<IEnumerable<DishDTO>>> GetSortedDishes(string sortOrder)
+        [HttpGet("{sortOrder}/{searchString}")]
+        public async Task<ActionResult<IEnumerable<DishDTO>>> GetSortedDishes(string sortOrder, string searchString)
         {
             //todo: bll-sort method for getting list
-            var res = await _dishService.GetSortedListFromDBAsync_2(sortOrder);
+            var res = await _dishService.GetSortedListFromDBAsync_3(sortOrder, searchString);
             return Ok(res);
         }
 
