@@ -266,7 +266,7 @@ else
                                             </li>
                                             <li class="nav-item px-2">
                                                 <NavLink class="btn-link">
-                                                    <span class="oi oi-eye" @onclick="@(e => OpenDetail(dish.Id.ToString()))"></span>
+                                                    <span class="oi oi-eye" @onclick="@(async(e) => await OpenDetailAsync(dish.Id.ToString()))"></span>
                                                 </NavLink>
                                             </li>
                                         </ul>
@@ -380,7 +380,7 @@ else
         return (_sortIndicate);
     }
 
-    private void OpenDetail(string id)
+    private async Task OpenDetailAsync(string id)
     {
         navigationManager.NavigateTo("/menu/detail/" + id);
     }
@@ -451,6 +451,7 @@ else
     // todo: minutes -> hours.minutes
     private string GetTimeByMinutes(int minutes)
     {
+
         return "";
     }
 
