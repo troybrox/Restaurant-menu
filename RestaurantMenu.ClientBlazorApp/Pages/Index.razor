@@ -1,12 +1,15 @@
 ﻿@page "/"
 
 @inject HttpClient Http
+@inject NavigationManager navigationManager
+
 @using RestaurantMenu.ClientBlazorApp.ViewModels
 @using System.Text.Json
 @using System.Text.Json.Serialization
 @using Newtonsoft.Json
 @using RestaurantMenu.ClientBlazorApp.Infrastructure
 
+@using RestaurantMenu.ClientBlazorApp.Pages
 
 <div>
     <h4 class="text-black-50">Меню блюд</h4>
@@ -24,8 +27,16 @@ else
                 <thead class="thead-light">
                     <tr>
                         <th>№</th>
-                        <th>Название блюда</th>
-                        <th>Описание блюда</th>
+                        <th>
+                            <a>
+                                <span @onclick="@(e => OrderMenuBy("Name"))">Название блюда</span>
+                            </a>
+                        </th>
+                        <th>
+                            <a>
+                                <span @onclick="@(e => OrderMenuBy("Description"))">Описание блюда</span>
+                            </a>
+                        </th>
                         <th>Состав</th>
                         <th>Цена</th>
                         <th>Действия</th>
@@ -43,8 +54,23 @@ else
                                 <td>@dish.Composition</td>
                                 <td>@dish.Price</td>
                                 <td>
-                                    <a>Изменить</a>
-                                    <a>Удалить</a>
+                                    <ul class="nav flex-row">
+                                        <li class="nav-item px-3">
+                                            <NavLink class="btn-link">
+                                                <span class="oi oi-pencil" aria-hidden="true"></span>
+                                            </NavLink>
+                                        </li>
+                                        <li class="nav-item px-3">
+                                            <NavLink class="btn-link">
+                                                <span class="oi oi-trash" aria-hidden="true"></span>
+                                            </NavLink>
+                                        </li>
+                                        <li class="nav-item px-3">
+                                            <NavLink class="btn-link">
+                                                <span class="oi oi-eye" aria-hidden="true" @onclick="@(e => OpenDetail(dish.Id.ToString()))"></span>
+                                            </NavLink>
+                                        </li>
+                                    </ul>
                                 </td>
                             </tr>
                         }
@@ -61,19 +87,73 @@ else
 }
 
 @code {
+
+    [Parameter]
+    public string sortOrder { get; set; } = "Name";
+
     private bool _isMenuSucceeded = false;
     private bool _isMenuNotEmpty = false;
 
     private List<DishViewModel> _dishes;
+    private DishViewModel _editModel = new DishViewModel();
 
     protected override async Task OnInitializedAsync()
     {
-        var _requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>("https://localhost:44318/api/menu");
-        if (_requestResult.Succeeded)
+        RequestResult<List<DishViewModel>> requestResult;
+
+        if (String.IsNullOrEmpty(sortOrder))
+        {
+            requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>("https://localhost:44318/api/menu");
+
+        }
+        else
+        {
+            requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>("https://localhost:44318/api/menu" + "/" + sortOrder);
+        }
+
+        if (requestResult.Succeeded)
         {
             _isMenuSucceeded = true;
-            if ((_dishes = _requestResult.Data) != null)
+            if ((_dishes = requestResult.Data) != null)
                 _isMenuNotEmpty = true;
         }
+
     }
+
+    private void OpenDetail(string id)
+    {
+        navigationManager.NavigateTo("/menu/detail/"+id);
+    }
+
+    private async Task OrderMenuBy(string sortOrderParameter)
+    {
+        string xsortOrder = "";
+        xsortOrder = sortOrder;
+
+        if (sortOrder.EndsWith("_desc"))
+        {
+            if(sortOrderParameter == xsortOrder.Substring(0, sortOrder.Length - 5))
+            {
+                sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
+            }
+            else
+            {
+                sortOrder = sortOrderParameter;
+            }
+        }
+        else
+        {
+            if(sortOrderParameter == sortOrder)
+            {
+                sortOrder = sortOrder += "_desc";
+            }
+            else
+            {
+                sortOrder = sortOrderParameter;
+            }
+        }
+
+        await OnInitializedAsync();
+    }
+
 }

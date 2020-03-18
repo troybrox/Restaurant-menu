@@ -28,11 +28,20 @@ namespace RestaurantMenu.Controllers
         public async Task<ActionResult<IEnumerable<DishDTO>>> GetDishes()
         {
             var res = await _dishService.GetAllFromDBAsync();
-            return Ok(res); 
+            return Ok(res);
+        }
+
+        // GET: api/Menu
+        [HttpGet("{sortOrder}")]
+        public async Task<ActionResult<IEnumerable<DishDTO>>> GetSortedDishes(string sortOrder)
+        {
+            //todo: bll-sort method for getting list
+            var res = await _dishService.GetSortedListFromDBAsync_2(sortOrder);
+            return Ok(res);
         }
 
         // GET: api/Menu/5
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("dish/{id}", Name = "Get")]
         public async Task<ActionResult<DishDTO>> GetDish(int id)
         {
             var res = await _dishService.GetByIDAsync(id);
