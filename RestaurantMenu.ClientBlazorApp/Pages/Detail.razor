@@ -1,0 +1,79 @@
+﻿@page "/menu/detail/{id}"
+
+@inject HttpClient Http
+@using RestaurantMenu.ClientBlazorApp.ViewModels
+@using RestaurantMenu.ClientBlazorApp.Infrastructure
+
+@if (@*!_isModelSucceeded*@ _model==null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    if (/*!_isModelNotEmpty*/ _model==null)
+    {
+        <div>
+            <p>Упс, информации о блюде нет...</p>
+        </div>
+    }
+    else
+    {
+        <div>
+            <h4 class="text-black-50">Информация о блюде</h4>
+        </div>
+        <div>
+            <div class="form-group">
+                <label><b>Название</b></label><br />
+                <p form-control>@_model.Name</p>
+            </div>
+            <div class="form-group">
+                <label><b>Состав</b></label><br />
+                <p>@_model.Composition</p>
+            </div>
+            <div class="form-group">
+                <label><b>Описание</b></label><br />
+                <p>@_model.Description</p>
+            </div>
+            <div class="form-group">
+                <label><b>Вес в граммах</b></label><br />
+                <p>@_model.Mass</p>
+            </div>
+            <div class="form-group">
+                <label><b>Калорийность</b></label><br />
+                <p>@_model.CalorieContent</p>
+            </div>
+            <div class="form-group">
+                <label><b>Время приготовления в минутах</b></label><br />
+                <p>@_model.CookingTime</p>
+            </div>
+            <div class="form-group">
+                <label><b>Цена</b></label><br />
+                <p>@_model.Price рублей</p>
+            </div>
+        </div>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public string id { get; set; }
+
+    public static DishViewModel _model { get; set; }
+
+    private bool _isModelSucceeded = false;
+    private bool _isModelNotEmpty = false;
+
+    protected async override Task OnInitializedAsync()
+    {
+        //todo: requestMessage - send id
+        var requesResult = await Http.GetJsonAsync<RequestResult<DishViewModel>>
+            ("https://localhost:44318/api/menu/dish/" + id.ToString());
+        if (requesResult.Succeeded)
+        {
+            _isModelSucceeded = true;
+            if ((_model = requesResult.Data) != null)
+                _isModelNotEmpty = true;
+        }
+    }
+}

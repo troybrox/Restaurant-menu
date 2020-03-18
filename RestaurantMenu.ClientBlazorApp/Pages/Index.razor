@@ -1,16 +1,66 @@
 ﻿@page "/"
 
 @inject HttpClient Http
+@inject NavigationManager navigationManager
+
 @using RestaurantMenu.ClientBlazorApp.ViewModels
-@using System.Text.Json
-@using System.Text.Json.Serialization
-@using Newtonsoft.Json
 @using RestaurantMenu.ClientBlazorApp.Infrastructure
 
+@using RestaurantMenu.ClientBlazorApp.Pages
 
-<div>
-    <h4 class="text-black-50">Меню блюд</h4>
-</div>
+<style>
+    .myheader {
+        float: left;
+    }
+
+    th {
+        text-align: left;
+        font-size: 14px;
+        height: 100px;
+        vertical-align: top;
+    }
+
+    td {
+        font-size: 14px;
+    }
+
+    table {
+        table-layout:fixed;
+        width:100%
+    }
+
+    thead-light{
+        height: 80px;
+    }
+
+    .trhead {
+        height: 80px;
+    }
+
+    .tablehead {
+        height: inherit;
+    }
+
+
+    .col_s {
+        width: 40px;
+    }
+
+    .col_m {
+        width: 130px;
+    }
+
+    .col_l {
+        width: 280px;
+        /*height: inherit;*/
+    }
+
+    .wrapper {
+        vertical-align: top;
+    }
+
+</style>
+
 
 @if (!_isMenuSucceeded)
 {
@@ -18,62 +68,390 @@
 }
 else
 {
+<div>
+    <div>
+        <h4 class="text-black-50">Меню блюд</h4>
+    </div>
+</div>
     <body>
-        <center>
-            <table class="table">
-                <thead class="thead-light">
-                    <tr>
-                        <th>№</th>
-                        <th>Название блюда</th>
-                        <th>Описание блюда</th>
-                        <th>Состав</th>
-                        <th>Цена</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (_isMenuNotEmpty)
-                    {
-                        @foreach (var dish in _dishes)
-                        {
-                            <tr>
-                                <th scope="row">@dish.Id</th>
-                                <td>@dish.Name</td>
-                                <td>@dish.Description</td>
-                                <td>@dish.Composition</td>
-                                <td>@dish.Price</td>
-                                <td>
-                                    <a>Изменить</a>
-                                    <a>Удалить</a>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>Список меню пуст!</tr>
-                    }
+        <div>
+            <center>
+                <table class="table">
+                    <thead class="thead-light">
+                        <tr class="trhead">
 
-                </tbody>
-            </table>
-        </center>
+                            <th class="col_s">
+                                <div class="tablehead">
+                                    <a href>
+                                        <span @onclick="@(e => OrderMenuBy("Id"))">№</span>
+                                    </a>
+                                </div>
+                            </th>
+
+                            <th class="col_m">
+                                <div class="tablehead">
+                                    <div>
+                                        <a href>
+                                            <span @onclick="@(e => OrderMenuBy("Name"))">Название</span>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        @{
+                                            if (sortOrder.Contains("Name"))
+                                            {
+                                                <a>
+                                                    Отсортировано: @_indicateSort
+                                                </a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </th>
+
+                            <th class="col_l">
+                                <div class="tablehead">
+                                    <div>
+                                        <a href>
+                                            <span @onclick="@(e => OrderMenuBy("Description"))">Описание</span>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        @{
+                                            if (sortOrder.Contains("Description"))
+                                            {
+                                                <a>Отсортировано: @_indicateSort</a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </th>
+
+                            <th class="col_l">
+                                <div class="tablehead">
+                                    <div>
+                                        <a href>
+                                            <span @onclick="@(e => OrderMenuBy("Composition"))">Состав</span>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        @{
+                                            if (sortOrder.Contains("Composition"))
+                                            {
+                                                <a>Отсортировано: @_indicateSort</a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </th>
+
+                            <th class="col_m">
+                                <div class="tablehead">
+                                    <div>
+                                        <a href>
+                                            <span @onclick="@(e => OrderMenuBy("AddingDate"))">Дата добавления</span>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        @{
+                                            if (sortOrder.Contains("AddingDate"))
+                                            {
+                                                <a>Отсортировано: @_indicateSort</a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </th>
+
+                            <th class="col_m">
+                                <div class="tablehead">
+                                    <div>
+                                        <a href>
+                                            <span @onclick="@(e => OrderMenuBy("CalorieContent"))">Калорийность</span>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        @{
+                                            if (sortOrder.Contains("CalorieContent"))
+                                            {
+                                                <a>Отсортировано: @_indicateSort</a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </th>
+
+                            <th class="col_m">
+                                <div class="tablehead">
+                                    <div>
+                                        <a href>
+                                            <span @onclick="@(e => OrderMenuBy("CookingTime"))">Время приготовления</span>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        @{
+                                            if (sortOrder.Contains("CookingTime"))
+                                            {
+                                                <a>Отсортировано: @_indicateSort</a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </th>
+
+                            <th class="col_m">
+                                <div class="tablehead">
+                                    <div>
+                                        <a href>
+                                            <span @onclick="@(e => OrderMenuBy("Mass"))">Вес порции</span>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        @{
+                                            if (sortOrder.Contains("Mass"))
+                                            {
+                                                <a>Отсортировано: @_indicateSort</a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </th>
+
+                            <th class="col_m">
+                                <div class="tablehead">
+                                    <div>
+                                        <a href>
+                                            <span @onclick="@(e => OrderMenuBy("Price"))">Цена</span>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        @{
+                                            if (sortOrder.Contains("Price"))
+                                            {
+                                                <a>Отсортировано: @_indicateSort</a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </th>
+
+                            <th class="col_m" style="height:inherit; vertical-align:middle;">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (_isMenuNotEmpty)
+                        {
+                            @foreach (var dish in _dishes)
+                            {
+                                <tr>
+                                    <th scope="row" class="col_s">@dish.Id</th>
+                                    <td class="col_m">@dish.Name</td>
+                                    <td class="col_l">@dish.Description</td>
+                                    <td class="col_l">@dish.Composition</td>
+                                    <td class="col_m">@dish.AddingDate</td>
+                                    <td class="col_m">@dish.CalorieContent ккал</td>
+                                    <td class="col_m">@dish.CookingTime мин</td>
+                                    <td class="col_m">@dish.Mass г</td>
+                                    <td class="col_m">@dish.Price руб</td>
+                                    <td class="col_m">
+                                        <ul class="nav flex-row">
+                                            <li class="nav-item px-2">
+                                                <NavLink class="btn-link">
+                                                    <span class="oi oi-pencil" aria-hidden="true"></span>
+                                                </NavLink>
+                                            </li>
+                                            <li class="nav-item px-2">
+                                                <NavLink class="btn-link">
+                                                    <span class="oi oi-trash" aria-hidden="true"></span>
+                                                </NavLink>
+                                            </li>
+                                            <li class="nav-item px-2">
+                                                <NavLink class="btn-link">
+                                                    <span class="oi oi-eye" @onclick="@(e => OpenDetail(dish.Id.ToString()))"></span>
+                                                </NavLink>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>Список меню пуст!</tr>
+                        }
+
+                    </tbody>
+                </table>
+            </center>
+        </div>
+        
     </body>
 }
 
 @code {
+
+    [Parameter]
+    public string sortOrder { get; set; } = "Id";
+    public string _indicateSort { get; set; }
+
+    private string _sortIndLetterAsc { get; set; } = "А..Я";
+    private string _sortIndLetterDesc { get; set; } = "Я..А";
+    private string _sortIndSymbolsAsc { get; set; } = "по возрастанию";
+    private string _sortIndSymbolsDesc { get; set; } = "по убыванию";
+    private string _sortIndDateAsc { get; set; } = "сначала старые";
+    private string _sortIndDateDesc { get; set; } = "сначала новые";
+
     private bool _isMenuSucceeded = false;
     private bool _isMenuNotEmpty = false;
 
     private List<DishViewModel> _dishes;
+    private DishViewModel _editModel = new DishViewModel();
+
+    private bool IsUp { get; set; } = true;
+
 
     protected override async Task OnInitializedAsync()
     {
-        var _requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>("https://localhost:44318/api/menu");
-        if (_requestResult.Succeeded)
+        RequestResult<List<DishViewModel>> requestResult;
+
+        if (String.IsNullOrEmpty(sortOrder))
+        {
+            requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>("https://localhost:44318/api/menu");
+        }
+        else
+        {
+            requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>("https://localhost:44318/api/menu" + "/" + sortOrder);
+        }
+
+        if (requestResult.Succeeded)
         {
             _isMenuSucceeded = true;
-            if ((_dishes = _requestResult.Data) != null)
+            if ((_dishes = requestResult.Data) != null)
                 _isMenuNotEmpty = true;
         }
+
+        SetSortIndicate();
     }
+
+    // sort-indicationg
+    private string SetSortIndicate()
+    {
+        string _sortIndicate = "";
+        if (!String.IsNullOrEmpty(sortOrder))
+        {
+            if (!sortOrder.EndsWith("_desc"))
+            {
+                if (sortOrder == "Name" || sortOrder == "Description" || sortOrder == "Composition")
+                {
+                    _sortIndicate = _sortIndLetterAsc;
+                }
+                else if (sortOrder == "Price" || sortOrder == "Mass" || sortOrder == "CalorieContent" ||
+                    sortOrder == "CookingTime")
+                {
+                    _sortIndicate = _sortIndSymbolsAsc;
+                }
+                else if (sortOrder == "AddingDate")
+                {
+                    _sortIndicate = _sortIndDateAsc;
+                }
+            }
+            else
+            {
+                string xOrder = "";
+                xOrder = sortOrder;
+                xOrder = xOrder.Substring(0, xOrder.Length - 5);
+
+                if (xOrder == "Name" || xOrder == "Description" || xOrder == "Composition")
+                {
+                    _sortIndicate = _sortIndLetterDesc;
+                }
+                else if (xOrder == "Price" || xOrder == "Mass" || xOrder == "CalorieContent" ||
+                    xOrder == "CookingTime")
+                {
+                    _sortIndicate = _sortIndSymbolsDesc;
+                }
+                else if (xOrder == "AddingDate")
+                {
+                    _sortIndicate = _sortIndDateDesc;
+                }
+            }
+        }
+
+        _indicateSort = _sortIndicate;
+        return (_sortIndicate);
+    }
+
+    private void OpenDetail(string id)
+    {
+        navigationManager.NavigateTo("/menu/detail/" + id);
+    }
+
+    private async Task OrderMenuBy(string sortOrderParameter)
+    {
+        //sortOrder = "";
+        string xsortOrder = "";
+        xsortOrder = sortOrder;
+
+        if (sortOrder.EndsWith("_desc"))
+        {
+            if (sortOrderParameter == xsortOrder.Substring(0, sortOrder.Length - 5))
+            {
+                sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
+            }
+            else
+            {
+                sortOrder = sortOrderParameter;
+            }
+        }
+        else
+        {
+            if (sortOrderParameter == sortOrder)
+            {
+                sortOrder = sortOrder += "_desc";
+            }
+            else
+            {
+                sortOrder = sortOrderParameter;
+            }
+        }
+
+        // sort-indicating
+
+        await OnInitializedAsync();
+    }
+
+    private void OrderMenuLink(string sortOrderParameter)
+    {
+        string xsortOrder = "";
+        xsortOrder = sortOrder;
+
+        if (sortOrder.EndsWith("_desc"))
+        {
+            if (sortOrderParameter == xsortOrder.Substring(0, sortOrder.Length - 5))
+            {
+                sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
+            }
+            else
+            {
+                sortOrder = sortOrderParameter;
+            }
+        }
+        else
+        {
+            if (sortOrderParameter == sortOrder)
+            {
+                sortOrder = sortOrder += "_desc";
+            }
+            else
+            {
+                sortOrder = sortOrderParameter;
+            }
+        }
+    }
+
+    // todo: minutes -> hours.minutes
+    private string GetTimeByMinutes(int minutes)
+    {
+        return "";
+    }
+
 }
