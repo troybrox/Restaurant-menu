@@ -277,24 +277,68 @@ namespace RestaurantMenu.BLL.Services
             throw new NotImplementedException();
         }
 
-        public async Task<OperationDetail<List<DishDTO>>> GetSortedListFromDBAsync_3(string sortOrder, string searchString)
+        public async Task<OperationDetail<List<DishDTO>>> GetSortedListFromDBAsync_3
+            (string sortOrder, string searchName, string searchDescrComp, /*string searchDescr, string searchComp,*/ int massMin, int massMax, int timeMin, int timeMax)
         {
             try
             {
                 var dtoList = new List<DishDTO>();
                 var dishes = from d in _context.Dishes select d;
 
-                string currentFilter = searchString;
-                if (!String.IsNullOrEmpty(searchString))
+                //string currentFilter = searchString;
+                //if (!String.IsNullOrEmpty(searchString))
+                //{
+                //    dishes = dishes.Where(d => d.Name.ToUpper().Contains(searchString.ToUpper())
+                //                           || d.Description.ToUpper().Contains(searchString.ToUpper())
+                //                           || d.Composition.ToUpper().Contains(searchString.ToUpper()));
+                //}
+
+                //string currentFilter = searchName;
+
+                //if (!String.IsNullOrEmpty(searchName))
+                //{
+                //    dishes = dishes.Where(d => d.Name.ToUpper().Contains(searchName.ToUpper()));
+                //}
+                //if (!String.IsNullOrEmpty(searchDescr))
+                //{
+                //    dishes = dishes.Where(d => d.Description.ToUpper().Contains(searchDescr.ToUpper()));
+                //}
+                //if (!String.IsNullOrEmpty(searchComp))
+                //{
+                //    dishes = dishes.Where(d => d.Composition.ToUpper().Contains(searchComp.ToUpper()));
+                //}
+
+                if (!String.IsNullOrEmpty(searchName))
                 {
-                    dishes = dishes.Where(d => d.Name.ToUpper().Contains(searchString.ToUpper())
-                                           || d.Description.ToUpper().Contains(searchString.ToUpper())
-                                           || d.Composition.ToUpper().Contains(searchString.ToUpper()));
+                    dishes = dishes.Where(d => d.Name.ToUpper().Contains(searchName.ToUpper()));
+                }
+                if (!String.IsNullOrEmpty(searchDescrComp))
+                {
+                    dishes = dishes.Where(d => d.Description.ToUpper().Contains(searchDescrComp.ToUpper()) 
+                                            || d.Composition.ToUpper().Contains(searchDescrComp.ToUpper()));
+                }
+
+                if (massMin > 0)
+                {
+                    dishes = dishes.Where(d => (d.Mass >= massMin));
+                }
+                if(massMax > 0)
+                {
+                    dishes = dishes.Where(d => (d.Mass <= massMax));
+                }
+
+                if(timeMin > 0)
+                {
+                    dishes = dishes.Where(d =>(d.CookingTime >= timeMin));
+                }
+                if(timeMax > 0)
+                {
+                    dishes = dishes.Where(d => (d.CookingTime <= timeMax));
                 }
 
                 if (String.IsNullOrEmpty(sortOrder))
                 {
-                    sortOrder = "Name";
+                    sortOrder = "Id";
                 }
 
                 bool descending = false;
