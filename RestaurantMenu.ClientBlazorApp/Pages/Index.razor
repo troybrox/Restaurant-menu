@@ -25,11 +25,11 @@
     }
 
     table {
-        table-layout:fixed;
-        width:100%
+        table-layout: fixed;
+        width: 100%
     }
 
-    thead-light{
+    thead-light {
         height: 80px;
     }
 
@@ -57,7 +57,6 @@
     .wrapper {
         vertical-align: top;
     }
-
 </style>
 
 
@@ -67,11 +66,13 @@
 }
 else
 {
-<div>
-    <h4 class="text-black-50">Меню блюд</h4>
-        <div  style="margin: 20px 20px 20px 20px">
+    <div>
+        <h4 class="text-black-50">Меню блюд</h4>
+        <div style="margin: 20px 20px 20px 20px">
+            <form>
+            </form>
             <div>
-                <p>Фильтры:</p> 
+                <p>Фильтры:</p>
                 <div class="form-group">
                     <label>Название блюда</label><br />
                     <input type="text" name="SearchNameString" class="form-control col-3" placeholder="" @bind="searchNameString" />
@@ -80,29 +81,43 @@ else
                     <label>Описание и состав</label><br />
                     <input type="text" name="SearchDescrCompString" class="form-control col-3" placeholder="" @bind="searchDescrCompString" />
                 </div>
-                <div>
-                    <label>Минимальный и максимальный вес порции</label><br />
-                    <div>
-                        <input type="number" name="MinMass" class="form-control col-3" placeholder="" @bind="_minMass"/>
-                        <input type="number" name="MaxMass" class="form-control col-3" placeholder="" @bind="_maxMass"/>
+                <div class="form-row">
+                    <div class="col-4 form-group">
+                        <label for="MinMass">Минимальный вес порции</label><br />
+                        <input type="number" id="MinMass" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_minMass" />
+                    </div>
+                    <div class="col-4 form-group">
+                        <label for="MaxMass">Максимальный вес порции</label><br />
+                        <input type="number" id="MaxMass" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_maxMass" />
                     </div>
                 </div>
-                <div>
-                    <label>Минимальное и максимальное время готовки</label><br />
-                    <div>
-                        <input type="number" name="MinTime" class="form-control col-3" placeholder=""  @bind="_minTime" />
-                        <input type="number" name="MaxTime" class="form-control col-3" placeholder="" @bind="_maxTime" />
+
+                <div class="form-row">
+                    <div class="col-4 form-group">
+                        <label for="MinTime">Минимальное время готовки</label><br />
+                        <input type="number" id="MinTime" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_minTime" />
+                    </div>
+                    <div class="col-4 form-group">
+                        <label for="MaxTime">Максимальное время готовки</label><br />
+                        <input type="number" id="MaxTime" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_maxTime" />
                     </div>
                 </div>
-                <div>
-                    @*<a href>
+
+                @*<div>
+                        <label>Минимальное и максимальное время готовки</label><br />
+                        <div>
+                            <input type="number" name="MinTime" class="form-control col-3" placeholder="" @bind="_minTime" />
+                            <input type="number" name="MaxTime" class="form-control col-3" placeholder="" @bind="_maxTime" />
+                        </div>
+                    </div>
+                    <div>*@
+                @*<a href>
                         <span @onclick="@(e => FilterMenuAsync(searchNameString, searchDescrCompString))">Поиск</span>
                     </a>*@
-                    <button class="btn btn-primary" @onclick="(e => FilterMenuAsync(searchNameString, searchDescrCompString))">Применить</button>
-                </div>
+                <button class="btn btn-primary" @onclick="(e => FilterMenuAsync(searchNameString, searchDescrCompString))">Применить</button>
             </div>
         </div>
-</div>
+    </div>
 
     <body>
         <div>
@@ -314,14 +329,14 @@ else
                 </table>
             </center>
         </div>
-        
+
     </body>
 }
 
 @code {
 
     [Parameter]
-    public string sortOrder { get; set; } =  "";
+    public string sortOrder { get; set; } = "";
     [Parameter]
     public string searchNameString { get; set; } = "";
     [Parameter]
@@ -452,45 +467,43 @@ else
 
         if (!String.IsNullOrEmpty(searchNameString))
         {
-                uriPath = uriPath + "/search_name:" + searchNameString;
-
-                if (!String.IsNullOrEmpty(searchDescrCompString))
-                {
-                    uriPath = uriPath + "/search_descr_comp:" + searchDescrCompString;
-
-                    if (_minMass > 0)
-                    {
-                        //uriPath = uriPath + "/min_mass:" + _minMass;
-                        minMassString = _minMass.ToString();
-                    }
-                    else
-                        minMassString = "0";
-
-                    if (_maxMass > 0)
-                    {
-                        maxMassString = _maxMass.ToString();
-                    }
-                    else
-                        maxMassString = "0";
-
-                    if(_minTime > 0)
-                    {
-                        minTimeString = _minTime.ToString();
-                    }
-                    else
-                        minTimeString = "0";
-
-                    if(_maxTime > 0)
-                    {
-                        maxTimeString = _maxTime.ToString();
-                    }
-                    else
-                        maxTimeString = "0";
-
-                    uriPath = uriPath + "/min_mass:" + minMassString + "/max_mass:" + maxMassString + "/min_time:" + minTimeString + "/max_time:" + maxTimeString;
-                }
+            uriPath = uriPath + "/search_name:" + searchNameString;
         }
 
+        if (!String.IsNullOrEmpty(searchDescrCompString))
+        {
+            uriPath = uriPath + "/search_descr_comp:" + searchDescrCompString;
+        }
+
+        if (_minMass > 0)
+        {
+            minMassString = _minMass.ToString();
+        }
+        else
+            minMassString = "0";
+
+        if (_maxMass > 0)
+        {
+            maxMassString = _maxMass.ToString();
+        }
+        else
+            maxMassString = "0";
+
+        if (_minTime > 0)
+        {
+            minTimeString = _minTime.ToString();
+        }
+        else
+            minTimeString = "0";
+
+        if (_maxTime > 0)
+        {
+            maxTimeString = _maxTime.ToString();
+        }
+        else
+            maxTimeString = "0";
+
+        uriPath = uriPath + "/min_mass:" + minMassString + "/max_mass:" + maxMassString + "/min_time:" + minTimeString + "/max_time:" + maxTimeString;
         requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>(uriPath);
 
         if (requestResult.Succeeded)
