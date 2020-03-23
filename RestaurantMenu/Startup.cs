@@ -67,14 +67,6 @@ namespace RestaurantMenu
                 app.UseHsts();
             }
 
-            //app.UseCors(options =>
-            //    options.WithOrigins("https://localhost:44360", "http://localhost:44318", "https://localhost:44318")
-            //    .AllowAnyMethod()
-            //    .AllowAnyHeader()
-            //    .AllowCredentials()
-            //    );
-
-
 
             app.UseCors(MyAllowSpecificOrigins);
 
@@ -82,15 +74,13 @@ namespace RestaurantMenu
             app.UseStaticFiles();
             app.UseRouting();
 
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapRazorPages();
                 endpoints.MapControllers();
             });   
         }
     }
-
-    public class CorsMidlware { }
 }

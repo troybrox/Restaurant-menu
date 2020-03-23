@@ -102,19 +102,10 @@ else
                         <input type="number" id="MaxTime" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_maxTime" />
                     </div>
                 </div>
-
-                @*<div>
-                        <label>Минимальное и максимальное время готовки</label><br />
-                        <div>
-                            <input type="number" name="MinTime" class="form-control col-3" placeholder="" @bind="_minTime" />
-                            <input type="number" name="MaxTime" class="form-control col-3" placeholder="" @bind="_maxTime" />
-                        </div>
-                    </div>
-                    <div>*@
-                @*<a href>
-                        <span @onclick="@(e => FilterMenuAsync(searchNameString, searchDescrCompString))">Поиск</span>
-                    </a>*@
-                <button class="btn btn-primary" @onclick="(e => FilterMenuAsync(searchNameString, searchDescrCompString))">Применить</button>
+                <div>
+                    <button class="btn btn-primary" @onclick="(e => FilterMenuAsync(searchNameString, searchDescrCompString))">Применить</button>
+                    <button class="btn btn-light" @onclick="(e => ClearFiltersAsync())">Сбросить фильтры</button>
+                </div>
             </div>
         </div>
     </div>
@@ -377,87 +368,6 @@ else
         string minTimeString = "";
         string maxTimeString = "";
 
-        //if (String.IsNullOrEmpty(sortOrder))
-        //{
-        //    if (!String.IsNullOrEmpty(searchNameString))
-        //    {
-        //        sortOrder = "Id";
-        //        uriPath = uriPath + "/sort:" + sortOrder;
-        //        uriPath = uriPath + "/search_name:" + searchNameString;
-        //        if (!String.IsNullOrEmpty(searchDescrCompString))
-        //        {
-        //            uriPath = uriPath + "/search_descr_comp:" + searchNameString;
-
-        //            if (_minMass > 0)
-        //            {
-        //                //uriPath = uriPath + "/min_mass:" + _minMass;
-        //                minMassString = _minMass.ToString();
-        //            }
-        //            else
-        //                minMassString = "0";
-        //            if (_maxMass > 0)
-        //            {
-        //                maxMassString = _maxMass.ToString();
-        //            }
-        //            else
-        //                maxMassString = "0";
-        //            if(_minTime > 0)
-        //            {
-        //                minTimeString = _minTime.ToString();
-        //            }
-        //            else
-        //                minTimeString = "0";
-        //            if(_maxTime > 0)
-        //            {
-        //                maxTimeString = _maxTime.ToString();
-        //            }
-        //            else
-        //                maxTimeString = "0";
-        //            uriPath = uriPath + "/min_mass:" + minMassString + "/max_mass:" + maxMassString + "/min_time:" + minTimeString + "/max_time:" + maxTimeString;
-        //        }
-        //    }
-        //}
-        //else
-        //{
-        //    uriPath = uriPath + "/sort:" + sortOrder;
-        //    if (!String.IsNullOrEmpty(searchNameString))
-        //    {
-        //        uriPath = uriPath + "/search_name:" + searchNameString;
-        //        if (!String.IsNullOrEmpty(searchDescrCompString))
-        //        {
-        //            uriPath = uriPath + "/search_descr_comp:" + searchDescrCompString;
-
-        //            if (_minMass > 0)
-        //            {
-        //                minMassString = _minMass.ToString();
-        //            }
-        //            else
-        //                minMassString = "0";
-        //            if (_maxMass > 0)
-        //            {
-        //                maxMassString = _maxMass.ToString();
-        //            }
-        //            else
-        //                maxMassString = "0";
-        //            if(_minTime > 0)
-        //            {
-        //                minTimeString = _minTime.ToString();
-        //            }
-        //            else
-        //                minTimeString = "0";
-        //            if(_maxTime > 0)
-        //            {
-        //                maxTimeString = _maxTime.ToString();
-        //            }
-        //            else
-        //                maxTimeString = "0";
-        //            uriPath = uriPath + "/min_mass:" + minMassString + "/max_mass:" + maxMassString + "/min_time:" + minTimeString + "/max_time:" + maxTimeString;
-        //        }
-
-        //    }
-        //}
-
-
         if (String.IsNullOrEmpty(sortOrder))
         {
             sortOrder = "Id";
@@ -568,7 +478,6 @@ else
 
     private async Task OrderMenuBy(string sortOrderParameter)
     {
-        //sortOrder = "";
         string xsortOrder = "";
         xsortOrder = sortOrder;
 
@@ -607,33 +516,15 @@ else
         await OnInitializedAsync();
     }
 
-    private void OrderMenuLink(string sortOrderParameter)
+    private async Task ClearFiltersAsync()
     {
-        string xsortOrder = "";
-        xsortOrder = sortOrder;
-
-        if (sortOrder.EndsWith("_desc"))
-        {
-            if (sortOrderParameter == xsortOrder.Substring(0, sortOrder.Length - 5))
-            {
-                sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
-            }
-            else
-            {
-                sortOrder = sortOrderParameter;
-            }
-        }
-        else
-        {
-            if (sortOrderParameter == sortOrder)
-            {
-                sortOrder = sortOrder += "_desc";
-            }
-            else
-            {
-                sortOrder = sortOrderParameter;
-            }
-        }
+        searchNameString = "";
+        searchDescrCompString = "";
+        _minMass = 0;
+        _maxMass = 0;
+        _minTime = 0;
+        _maxTime = 0;
+        await OnInitializedAsync();
     }
 
     // todo: minutes -> hours.minutes
