@@ -25,11 +25,11 @@
     }
 
     table {
-        table-layout:fixed;
-        width:100%
+        table-layout: fixed;
+        width: 100%
     }
 
-    thead-light{
+    thead-light {
         height: 80px;
     }
 
@@ -52,13 +52,11 @@
 
     .col_l {
         width: 280px;
-        /*height: inherit;*/
     }
 
     .wrapper {
         vertical-align: top;
     }
-
 </style>
 
 
@@ -68,11 +66,59 @@
 }
 else
 {
-<div>
     <div>
         <h4 class="text-black-50">Меню блюд</h4>
+        <div style="margin: 20px 20px 20px 20px">
+            <form>
+            </form>
+            <div>
+                <p>Фильтры:</p>
+                <div class="form-group">
+                    <label>Название блюда</label><br />
+                    <input type="text" name="SearchNameString" class="form-control col-3" placeholder="" @bind="searchNameString" />
+                </div>
+                <div class="form-group">
+                    <label>Описание и состав</label><br />
+                    <input type="text" name="SearchDescrCompString" class="form-control col-3" placeholder="" @bind="searchDescrCompString" />
+                </div>
+                <div class="form-row">
+                    <div class="col-4 form-group">
+                        <label for="MinMass">Минимальный вес порции</label><br />
+                        <input type="number" id="MinMass" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_minMass" />
+                    </div>
+                    <div class="col-4 form-group">
+                        <label for="MaxMass">Максимальный вес порции</label><br />
+                        <input type="number" id="MaxMass" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_maxMass" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-4 form-group">
+                        <label for="MinTime">Минимальное время готовки</label><br />
+                        <input type="number" id="MinTime" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_minTime" />
+                    </div>
+                    <div class="col-4 form-group">
+                        <label for="MaxTime">Максимальное время готовки</label><br />
+                        <input type="number" id="MaxTime" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_maxTime" />
+                    </div>
+                </div>
+
+                @*<div>
+                        <label>Минимальное и максимальное время готовки</label><br />
+                        <div>
+                            <input type="number" name="MinTime" class="form-control col-3" placeholder="" @bind="_minTime" />
+                            <input type="number" name="MaxTime" class="form-control col-3" placeholder="" @bind="_maxTime" />
+                        </div>
+                    </div>
+                    <div>*@
+                @*<a href>
+                        <span @onclick="@(e => FilterMenuAsync(searchNameString, searchDescrCompString))">Поиск</span>
+                    </a>*@
+                <button class="btn btn-primary" @onclick="(e => FilterMenuAsync(searchNameString, searchDescrCompString))">Применить</button>
+            </div>
+        </div>
     </div>
-</div>
+
     <body>
         <div>
             <center>
@@ -266,7 +312,7 @@ else
                                             </li>
                                             <li class="nav-item px-2">
                                                 <NavLink class="btn-link">
-                                                    <span class="oi oi-eye" @onclick="@(async(e) => await OpenDetailAsync(dish.Id.ToString()))"></span>
+                                                    <span class="oi oi-eye" @onclick="@(e => OpenDetailAsync(dish.Id.ToString()))"></span>
                                                 </NavLink>
                                             </li>
                                         </ul>
@@ -283,14 +329,28 @@ else
                 </table>
             </center>
         </div>
-        
+
     </body>
 }
 
 @code {
 
     [Parameter]
-    public string sortOrder { get; set; } = "Id";
+    public string sortOrder { get; set; } = "";
+    [Parameter]
+    public string searchNameString { get; set; } = "";
+    [Parameter]
+    public string searchDescrCompString { get; set; } = "";
+
+    [Parameter]
+    public int _minMass { get; set; }
+    [Parameter]
+    public int _maxMass { get; set; }
+    [Parameter]
+    public int _minTime { get; set; }
+    [Parameter]
+    public int _maxTime { get; set; }
+
     public string _indicateSort { get; set; }
 
     private string _sortIndLetterAsc { get; set; } = "А..Я";
@@ -306,21 +366,145 @@ else
     private List<DishViewModel> _dishes;
     private DishViewModel _editModel = new DishViewModel();
 
-    private bool IsUp { get; set; } = true;
-
 
     protected override async Task OnInitializedAsync()
     {
+        string uriPath = "https://localhost:44318/api/menu";
         RequestResult<List<DishViewModel>> requestResult;
+
+        string minMassString = "";
+        string maxMassString = "";
+        string minTimeString = "";
+        string maxTimeString = "";
+
+        //if (String.IsNullOrEmpty(sortOrder))
+        //{
+        //    if (!String.IsNullOrEmpty(searchNameString))
+        //    {
+        //        sortOrder = "Id";
+        //        uriPath = uriPath + "/sort:" + sortOrder;
+        //        uriPath = uriPath + "/search_name:" + searchNameString;
+        //        if (!String.IsNullOrEmpty(searchDescrCompString))
+        //        {
+        //            uriPath = uriPath + "/search_descr_comp:" + searchNameString;
+
+        //            if (_minMass > 0)
+        //            {
+        //                //uriPath = uriPath + "/min_mass:" + _minMass;
+        //                minMassString = _minMass.ToString();
+        //            }
+        //            else
+        //                minMassString = "0";
+        //            if (_maxMass > 0)
+        //            {
+        //                maxMassString = _maxMass.ToString();
+        //            }
+        //            else
+        //                maxMassString = "0";
+        //            if(_minTime > 0)
+        //            {
+        //                minTimeString = _minTime.ToString();
+        //            }
+        //            else
+        //                minTimeString = "0";
+        //            if(_maxTime > 0)
+        //            {
+        //                maxTimeString = _maxTime.ToString();
+        //            }
+        //            else
+        //                maxTimeString = "0";
+        //            uriPath = uriPath + "/min_mass:" + minMassString + "/max_mass:" + maxMassString + "/min_time:" + minTimeString + "/max_time:" + maxTimeString;
+        //        }
+        //    }
+        //}
+        //else
+        //{
+        //    uriPath = uriPath + "/sort:" + sortOrder;
+        //    if (!String.IsNullOrEmpty(searchNameString))
+        //    {
+        //        uriPath = uriPath + "/search_name:" + searchNameString;
+        //        if (!String.IsNullOrEmpty(searchDescrCompString))
+        //        {
+        //            uriPath = uriPath + "/search_descr_comp:" + searchDescrCompString;
+
+        //            if (_minMass > 0)
+        //            {
+        //                minMassString = _minMass.ToString();
+        //            }
+        //            else
+        //                minMassString = "0";
+        //            if (_maxMass > 0)
+        //            {
+        //                maxMassString = _maxMass.ToString();
+        //            }
+        //            else
+        //                maxMassString = "0";
+        //            if(_minTime > 0)
+        //            {
+        //                minTimeString = _minTime.ToString();
+        //            }
+        //            else
+        //                minTimeString = "0";
+        //            if(_maxTime > 0)
+        //            {
+        //                maxTimeString = _maxTime.ToString();
+        //            }
+        //            else
+        //                maxTimeString = "0";
+        //            uriPath = uriPath + "/min_mass:" + minMassString + "/max_mass:" + maxMassString + "/min_time:" + minTimeString + "/max_time:" + maxTimeString;
+        //        }
+
+        //    }
+        //}
+
 
         if (String.IsNullOrEmpty(sortOrder))
         {
-            requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>("https://localhost:44318/api/menu");
+            sortOrder = "Id";
+        }
+
+        uriPath = uriPath + "/sort:" + sortOrder;
+
+        if (!String.IsNullOrEmpty(searchNameString))
+        {
+            uriPath = uriPath + "/search_name:" + searchNameString;
+        }
+
+        if (!String.IsNullOrEmpty(searchDescrCompString))
+        {
+            uriPath = uriPath + "/search_descr_comp:" + searchDescrCompString;
+        }
+
+        if (_minMass > 0)
+        {
+            minMassString = _minMass.ToString();
         }
         else
+            minMassString = "0";
+
+        if (_maxMass > 0)
         {
-            requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>("https://localhost:44318/api/menu" + "/" + sortOrder);
+            maxMassString = _maxMass.ToString();
         }
+        else
+            maxMassString = "0";
+
+        if (_minTime > 0)
+        {
+            minTimeString = _minTime.ToString();
+        }
+        else
+            minTimeString = "0";
+
+        if (_maxTime > 0)
+        {
+            maxTimeString = _maxTime.ToString();
+        }
+        else
+            maxTimeString = "0";
+
+        uriPath = uriPath + "/min_mass:" + minMassString + "/max_mass:" + maxMassString + "/min_time:" + minTimeString + "/max_time:" + maxTimeString;
+        requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>(uriPath);
 
         if (requestResult.Succeeded)
         {
@@ -380,10 +564,7 @@ else
         return (_sortIndicate);
     }
 
-    private async Task OpenDetailAsync(string id)
-    {
-        navigationManager.NavigateTo("/menu/detail/" + id);
-    }
+    private void OpenDetailAsync(string id) => navigationManager.NavigateTo("/menu/detail/" + id);
 
     private async Task OrderMenuBy(string sortOrderParameter)
     {
@@ -419,6 +600,13 @@ else
         await OnInitializedAsync();
     }
 
+    private async Task FilterMenuAsync(string name, string descComp)
+    {
+        searchNameString = name;
+        searchDescrCompString = descComp;
+        await OnInitializedAsync();
+    }
+
     private void OrderMenuLink(string sortOrderParameter)
     {
         string xsortOrder = "";
@@ -451,7 +639,6 @@ else
     // todo: minutes -> hours.minutes
     private string GetTimeByMinutes(int minutes)
     {
-
         return "";
     }
 

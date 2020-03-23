@@ -277,6 +277,113 @@ namespace RestaurantMenu.BLL.Services
             throw new NotImplementedException();
         }
 
+        public async Task<OperationDetail<List<DishDTO>>> GetSortedListFromDBAsync_3
+            (string sortOrder, string searchName, string searchDescrComp, /*string searchDescr, string searchComp,*/ int massMin, int massMax, int timeMin, int timeMax)
+        {
+            try
+            {
+                var dtoList = new List<DishDTO>();
+                var dishes = from d in _context.Dishes select d;
+
+                //string currentFilter = searchString;
+                //if (!String.IsNullOrEmpty(searchString))
+                //{
+                //    dishes = dishes.Where(d => d.Name.ToUpper().Contains(searchString.ToUpper())
+                //                           || d.Description.ToUpper().Contains(searchString.ToUpper())
+                //                           || d.Composition.ToUpper().Contains(searchString.ToUpper()));
+                //}
+
+                //string currentFilter = searchName;
+
+                //if (!String.IsNullOrEmpty(searchName))
+                //{
+                //    dishes = dishes.Where(d => d.Name.ToUpper().Contains(searchName.ToUpper()));
+                //}
+                //if (!String.IsNullOrEmpty(searchDescr))
+                //{
+                //    dishes = dishes.Where(d => d.Description.ToUpper().Contains(searchDescr.ToUpper()));
+                //}
+                //if (!String.IsNullOrEmpty(searchComp))
+                //{
+                //    dishes = dishes.Where(d => d.Composition.ToUpper().Contains(searchComp.ToUpper()));
+                //}
+
+                if (!String.IsNullOrEmpty(searchName))
+                {
+                    dishes = dishes.Where(d => d.Name.ToUpper().Contains(searchName.ToUpper()));
+                }
+                if (!String.IsNullOrEmpty(searchDescrComp))
+                {
+                    dishes = dishes.Where(d => d.Description.ToUpper().Contains(searchDescrComp.ToUpper()) 
+                                            || d.Composition.ToUpper().Contains(searchDescrComp.ToUpper()));
+                }
+
+                if (massMin > 0)
+                {
+                    dishes = dishes.Where(d => (d.Mass >= massMin));
+                }
+                if(massMax > 0)
+                {
+                    dishes = dishes.Where(d => (d.Mass <= massMax));
+                }
+
+                if(timeMin > 0)
+                {
+                    dishes = dishes.Where(d =>(d.CookingTime >= timeMin));
+                }
+                if(timeMax > 0)
+                {
+                    dishes = dishes.Where(d => (d.CookingTime <= timeMax));
+                }
+
+                if (String.IsNullOrEmpty(sortOrder))
+                {
+                    sortOrder = "Id";
+                }
+
+                bool descending = false;
+
+                if (sortOrder.EndsWith("_desc"))
+                {
+                    sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
+                    descending = true;
+                }
+
+                if (descending)
+                {
+                    dishes = dishes.OrderByDescending(e => EF.Property<object>(e, sortOrder));
+                }
+                else
+                {
+                    dishes = dishes.OrderBy(e => EF.Property<object>(e, sortOrder));
+                }
+
+                foreach (Dish entity in await dishes.AsNoTracking().ToListAsync())
+                {
+                    dtoList.Add(
+                        new DishDTO
+                        {
+                            Id = entity.Id,
+                            Name = entity.Name,
+                            AddingDate = entity.AddingDate,
+                            Price = entity.Price,
+                            Composition = entity.Composition,
+                            Mass = entity.Mass,
+                            CalorieContent = entity.CalorieContent,
+                            CookingTime = entity.CookingTime,
+                            Description = entity.Description
+                        });
+                }
+
+                return (new OperationDetail<List<DishDTO>> { Succeeded = true, Data = dtoList });
+            }
+            catch (Exception e)
+            {
+                return (new OperationDetail<List<DishDTO>> { Succeeded = false, Message = "Ошибка при получении отсортированного списка блюд из базы данных:\n" + e.Message });
+            }
+            throw new NotImplementedException();
+        }
+
         private Dish GetEntityFromDTO(DishDTO dto)
         {
             return new Dish
