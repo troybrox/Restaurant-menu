@@ -32,7 +32,9 @@ namespace RestaurantMenu.BLL.Services
             } 
             catch(Exception e)
             {
-                return new OperationDetail { Succeeded = false, Message = "Ошибка при добавлении записи в базу данных:\n" + e.Message };
+                List<string> errorList = new List<string>();
+                errorList.Add("Ошибка при добавлении записи в базу данных: " + e.Message);
+                return new OperationDetail { Succeeded = false, ErrorMessages = errorList };
             }
         }
 
@@ -47,7 +49,9 @@ namespace RestaurantMenu.BLL.Services
             }
             catch(Exception e)
             {
-                return new OperationDetail { Succeeded = false, Message = e.Message };
+                List<string> errorList = new List<string>();
+                errorList.Add(e.Message);
+                return new OperationDetail { Succeeded = false, ErrorMessages = errorList };
             }
         }
 
@@ -70,7 +74,9 @@ namespace RestaurantMenu.BLL.Services
             }
             catch (Exception e)
             {
-                return new OperationDetail { Succeeded = false, Message = e.Message };
+                List<string> errorList = new List<string>();
+                errorList.Add(e.Message);
+                return new OperationDetail { Succeeded = false, ErrorMessages = errorList };
             }
         }
 
@@ -100,7 +106,9 @@ namespace RestaurantMenu.BLL.Services
             }
             catch(Exception e)
             {
-                return (new OperationDetail<List<DishDTO>> { Succeeded = false, Message = "Ошибка при получении списка блюд из базы данных:\n" + e.Message });
+                List<string> errorList = new List<string>();
+                errorList.Add(e.Message + e.Message);
+                return (new OperationDetail<List<DishDTO>> { Succeeded = false, ErrorMessages = errorList });
             }
         }
 
@@ -109,8 +117,11 @@ namespace RestaurantMenu.BLL.Services
             try
             {
                 Dish entity = await _context.Dishes.FirstOrDefaultAsync(d => d.Id == id); 
-                if(entity == null)
-                    return new OperationDetail<DishDTO> { Succeeded = false, Message = "Блюдо не найдено." };
+                if(entity == null) 
+                {
+                    return new OperationDetail<DishDTO> { Succeeded = false, ErrorMessages = new List<string>() { "Блюдо не найдено" } };
+                }
+                    
                 return (
                     new OperationDetail<DishDTO>
                     { 
@@ -130,99 +141,157 @@ namespace RestaurantMenu.BLL.Services
                     }
                 );
             }
-            catch (Exception ex)
-            {
-                return new OperationDetail<DishDTO> { Succeeded = false, Message = ex.Message };
-            }
-        }
-
-        public async Task<OperationDetail<List<DishDTO>>> GetSortedListFromDBAsync(string sortOrder)
-        {
-            SortParamContract contract = new SortParamContract();
-            try
-            {
-                var dtoList = new List<DishDTO>();
-                var dishes = from d in _context.Dishes select d;
-                switch (sortOrder)
-                {
-                    case "name":
-                        dishes = dishes.OrderBy(d => d.Name);
-                        break;
-                    case "name_desc":
-                        dishes = dishes.OrderByDescending(d => d.Name);
-                        break;
-                    case "description":
-                        dishes = dishes.OrderBy(d => d.Description);
-                        break;
-                    case "description_desc":
-                        dishes = dishes.OrderByDescending(d => d.Description);
-                        break;
-                    case "composition":
-                        dishes = dishes.OrderBy(d => d.Composition);
-                        break;
-                    case "composition_desc":
-                        dishes = dishes.OrderByDescending(d => d.Composition);
-                        break;
-                    case "price":
-                        dishes = dishes.OrderBy(d => d.Price);
-                        break;
-                    case "price_desc":
-                        dishes = dishes.OrderByDescending(d => d.Price);
-                        break;
-                    case "mass":
-                        dishes = dishes.OrderBy(d => d.Mass);
-                        break;
-                    case "mass_desc":
-                        dishes = dishes.OrderByDescending(d => d.Mass);
-                        break;
-                    case "caloriecontent":
-                        dishes = dishes.OrderBy(d => d.CalorieContent);
-                        break;
-                    case "caloriecontent_desc":
-                        dishes = dishes.OrderByDescending(d => d.CalorieContent);
-                        break;
-                    case "cookingtime":
-                        dishes = dishes.OrderBy(d => d.CookingTime);
-                        break;
-                    case "cookingtime_desc":
-                        dishes = dishes.OrderByDescending(d => d.CookingTime);
-                        break;
-                    case "addingdate":
-                        dishes = dishes.OrderBy(d => d.AddingDate);
-                        break;
-                    case "addingdate_desc":
-                        dishes = dishes.OrderByDescending(d => d.AddingDate);
-                        break;
-                }
-
-                foreach (Dish entity in await dishes.AsNoTracking().ToListAsync())
-                {
-                    dtoList.Add(
-                        new DishDTO
-                        {
-                            Id = entity.Id,
-                            Name = entity.Name,
-                            AddingDate = entity.AddingDate,
-                            Price = entity.Price,
-                            Composition = entity.Composition,
-                            Mass = entity.Mass,
-                            CalorieContent = entity.CalorieContent,
-                            CookingTime = entity.CookingTime,
-                            Description = entity.Description
-                        });
-                }
-
-                return (new OperationDetail<List<DishDTO>> { Succeeded = true, Data = dtoList });
-            }
             catch (Exception e)
             {
-                return (new OperationDetail<List<DishDTO>> { Succeeded = false, Message = "Ошибка при получении отсортированного списка блюд из базы данных:\n" + e.Message });
+                List<string> errorList = new List<string>();
+                errorList.Add(e.Message);
+                return new OperationDetail<DishDTO> { Succeeded = false, ErrorMessages = errorList };
             }
-            throw new NotImplementedException();
         }
 
+        //public async Task<OperationDetail<List<DishDTO>>> GetSortedListFromDBAsync(string sortOrder)
+        //{
+        //    SortParamContract contract = new SortParamContract();
+        //    try
+        //    {
+        //        var dtoList = new List<DishDTO>();
+        //        var dishes = from d in _context.Dishes select d;
+        //        switch (sortOrder)
+        //        {
+        //            case "name":
+        //                dishes = dishes.OrderBy(d => d.Name);
+        //                break;
+        //            case "name_desc":
+        //                dishes = dishes.OrderByDescending(d => d.Name);
+        //                break;
+        //            case "description":
+        //                dishes = dishes.OrderBy(d => d.Description);
+        //                break;
+        //            case "description_desc":
+        //                dishes = dishes.OrderByDescending(d => d.Description);
+        //                break;
+        //            case "composition":
+        //                dishes = dishes.OrderBy(d => d.Composition);
+        //                break;
+        //            case "composition_desc":
+        //                dishes = dishes.OrderByDescending(d => d.Composition);
+        //                break;
+        //            case "price":
+        //                dishes = dishes.OrderBy(d => d.Price);
+        //                break;
+        //            case "price_desc":
+        //                dishes = dishes.OrderByDescending(d => d.Price);
+        //                break;
+        //            case "mass":
+        //                dishes = dishes.OrderBy(d => d.Mass);
+        //                break;
+        //            case "mass_desc":
+        //                dishes = dishes.OrderByDescending(d => d.Mass);
+        //                break;
+        //            case "caloriecontent":
+        //                dishes = dishes.OrderBy(d => d.CalorieContent);
+        //                break;
+        //            case "caloriecontent_desc":
+        //                dishes = dishes.OrderByDescending(d => d.CalorieContent);
+        //                break;
+        //            case "cookingtime":
+        //                dishes = dishes.OrderBy(d => d.CookingTime);
+        //                break;
+        //            case "cookingtime_desc":
+        //                dishes = dishes.OrderByDescending(d => d.CookingTime);
+        //                break;
+        //            case "addingdate":
+        //                dishes = dishes.OrderBy(d => d.AddingDate);
+        //                break;
+        //            case "addingdate_desc":
+        //                dishes = dishes.OrderByDescending(d => d.AddingDate);
+        //                break;
+        //        }
 
-        public async Task<OperationDetail<List<DishDTO>>> GetSortedListFromDBAsync_2(string sortOrder)
+        //        foreach (Dish entity in await dishes.AsNoTracking().ToListAsync())
+        //        {
+        //            dtoList.Add(
+        //                new DishDTO
+        //                {
+        //                    Id = entity.Id,
+        //                    Name = entity.Name,
+        //                    AddingDate = entity.AddingDate,
+        //                    Price = entity.Price,
+        //                    Composition = entity.Composition,
+        //                    Mass = entity.Mass,
+        //                    CalorieContent = entity.CalorieContent,
+        //                    CookingTime = entity.CookingTime,
+        //                    Description = entity.Description
+        //                });
+        //        }
+
+        //        return (new OperationDetail<List<DishDTO>> { Succeeded = true, Data = dtoList });
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return (new OperationDetail<List<DishDTO>> { Succeeded = false, ErrorMessages = "Ошибка при получении отсортированного списка блюд из базы данных:\n" + e.Message });
+        //    }
+        //    throw new NotImplementedException();
+        //}
+
+
+        //public async Task<OperationDetail<List<DishDTO>>> GetSortedListFromDBAsync_2(string sortOrder)
+        //{
+        //    try
+        //    {
+        //        var dtoList = new List<DishDTO>();
+        //        var dishes = from d in _context.Dishes select d;
+
+        //        if (String.IsNullOrEmpty(sortOrder))
+        //        {
+        //            sortOrder = "Name";
+        //        }
+
+        //        bool descending = false;
+
+        //        if (sortOrder.EndsWith("_desc"))
+        //        {
+        //            sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
+        //            descending = true;
+        //        }
+
+        //        if (descending)
+        //        {
+        //            dishes = dishes.OrderByDescending(e => EF.Property<object>(e, sortOrder));
+        //        }
+        //        else
+        //        {
+        //            dishes = dishes.OrderBy(e => EF.Property<object>(e, sortOrder));
+        //        }
+
+        //        foreach (Dish entity in await dishes.AsNoTracking().ToListAsync())
+        //        {
+        //            dtoList.Add(
+        //                new DishDTO
+        //                {
+        //                    Id = entity.Id,
+        //                    Name = entity.Name,
+        //                    AddingDate = entity.AddingDate,
+        //                    Price = entity.Price,
+        //                    Composition = entity.Composition,
+        //                    Mass = entity.Mass,
+        //                    CalorieContent = entity.CalorieContent,
+        //                    CookingTime = entity.CookingTime,
+        //                    Description = entity.Description
+        //                });
+        //        }
+
+        //        return (new OperationDetail<List<DishDTO>> { Succeeded = true, Data = dtoList });
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return (new OperationDetail<List<DishDTO>> { Succeeded = false, ErrorMessages = "Ошибка при получении отсортированного списка блюд из базы данных:\n" + e.Message });
+        //    }
+        //    throw new NotImplementedException();
+        //}
+
+        public async Task<OperationDetail<List<DishDTO>>> GetSortedFilteredListFromDBAsync
+            (string sortOrder, string searchName, string searchDescrComp, int massMin, int massMax, int timeMin, int timeMax)
         {
             try
             {
@@ -231,7 +300,7 @@ namespace RestaurantMenu.BLL.Services
 
                 if (String.IsNullOrEmpty(sortOrder))
                 {
-                    sortOrder = "Name";
+                    sortOrder = "Id";
                 }
 
                 bool descending = false;
@@ -250,40 +319,6 @@ namespace RestaurantMenu.BLL.Services
                 {
                     dishes = dishes.OrderBy(e => EF.Property<object>(e, sortOrder));
                 }
-
-                foreach (Dish entity in await dishes.AsNoTracking().ToListAsync())
-                {
-                    dtoList.Add(
-                        new DishDTO
-                        {
-                            Id = entity.Id,
-                            Name = entity.Name,
-                            AddingDate = entity.AddingDate,
-                            Price = entity.Price,
-                            Composition = entity.Composition,
-                            Mass = entity.Mass,
-                            CalorieContent = entity.CalorieContent,
-                            CookingTime = entity.CookingTime,
-                            Description = entity.Description
-                        });
-                }
-
-                return (new OperationDetail<List<DishDTO>> { Succeeded = true, Data = dtoList });
-            }
-            catch (Exception e)
-            {
-                return (new OperationDetail<List<DishDTO>> { Succeeded = false, Message = "Ошибка при получении отсортированного списка блюд из базы данных:\n" + e.Message });
-            }
-            throw new NotImplementedException();
-        }
-
-        public async Task<OperationDetail<List<DishDTO>>> GetSortedListFromDBAsync_3
-            (string sortOrder, string searchName, string searchDescrComp, /*string searchDescr, string searchComp,*/ int massMin, int massMax, int timeMin, int timeMax)
-        {
-            try
-            {
-                var dtoList = new List<DishDTO>();
-                var dishes = from d in _context.Dishes select d;
 
                 if (!String.IsNullOrEmpty(searchName))
                 {
@@ -313,28 +348,6 @@ namespace RestaurantMenu.BLL.Services
                     dishes = dishes.Where(d => (d.CookingTime <= timeMax));
                 }
 
-                if (String.IsNullOrEmpty(sortOrder))
-                {
-                    sortOrder = "Id";
-                }
-
-                bool descending = false;
-
-                if (sortOrder.EndsWith("_desc"))
-                {
-                    sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
-                    descending = true;
-                }
-
-                if (descending)
-                {
-                    dishes = dishes.OrderByDescending(e => EF.Property<object>(e, sortOrder));
-                }
-                else
-                {
-                    dishes = dishes.OrderBy(e => EF.Property<object>(e, sortOrder));
-                }
-
                 foreach (Dish entity in await dishes.AsNoTracking().ToListAsync())
                 {
                     dtoList.Add(
@@ -356,7 +369,9 @@ namespace RestaurantMenu.BLL.Services
             }
             catch (Exception e)
             {
-                return (new OperationDetail<List<DishDTO>> { Succeeded = false, Message = "Ошибка при получении отсортированного списка блюд из базы данных:\n" + e.Message });
+                List<string> errorList = new List<string>();
+                errorList.Add(e.Message + e.Message);
+                return (new OperationDetail<List<DishDTO>> { Succeeded = false, ErrorMessages = errorList });
             }
             throw new NotImplementedException();
         }

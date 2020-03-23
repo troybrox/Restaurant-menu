@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Net.Http.Headers;
 using RestaurantMenu.BLL.DTO;
 using RestaurantMenu.BLL.Interfaces;
@@ -37,7 +38,7 @@ namespace RestaurantMenu.Controllers
         public async Task<ActionResult<IEnumerable<DishDTO>>> GetSortedDishes(string sortOrder, int minMass, int maxMass, int minTime, int maxTime)
         {
             //todo: bll-sort method for getting list
-            var res = await _dishService.GetSortedListFromDBAsync_3(sortOrder, null, null, minMass, maxMass, minTime, maxTime);
+            var res = await _dishService.GetSortedFilteredListFromDBAsync(sortOrder, null, null, minMass, maxMass, minTime, maxTime);
             return Ok(res);
         }
 
@@ -46,7 +47,7 @@ namespace RestaurantMenu.Controllers
         [HttpGet("sort:{sortOrder}/search_name:{searchName}/min_mass:{minMass}/max_mass:{maxMass}/min_time:{minTime}/max_time:{maxTime}")] 
         public async Task<ActionResult<IEnumerable<DishDTO>>> GetFilteredDishes(string sortOrder, string searchName, int minMass, int maxMass, int minTime, int maxTime)
         {
-            var res = await _dishService.GetSortedListFromDBAsync_3(sortOrder, searchName, null, minMass, maxMass, minTime, maxTime);
+            var res = await _dishService.GetSortedFilteredListFromDBAsync(sortOrder, searchName, null, minMass, maxMass, minTime, maxTime);
             return Ok(res);
         }
 
@@ -55,7 +56,7 @@ namespace RestaurantMenu.Controllers
         [HttpGet("sort:{sortOrder}/search_descr_comp:{searchDescrComp}/min_mass:{minMass}/max_mass:{maxMass}/min_time:{minTime}/max_time:{maxTime}")]
         public async Task<ActionResult<IEnumerable<DishDTO>>> GetSortedFilteredByDecCompDishes(string sortOrder, string searchDescrComp, int minMass, int maxMass, int minTime, int maxTime)
         {
-            var res = await _dishService.GetSortedListFromDBAsync_3(sortOrder, null, searchDescrComp, minMass, maxMass, minTime, maxTime);
+            var res = await _dishService.GetSortedFilteredListFromDBAsync(sortOrder, null, searchDescrComp, minMass, maxMass, minTime, maxTime);
             return Ok(res);
         }
 
@@ -65,7 +66,7 @@ namespace RestaurantMenu.Controllers
         public async Task<ActionResult<IEnumerable<DishDTO>>> GetSortedFiltered
             (string sortOrder, string searchName, string searchDescrComp, int minMass, int maxMass, int minTime, int maxTime)
         {
-            var res = await _dishService.GetSortedListFromDBAsync_3(sortOrder, searchName, searchDescrComp, minMass, maxMass, minTime, maxTime);
+            var res = await _dishService.GetSortedFilteredListFromDBAsync(sortOrder, searchName, searchDescrComp, minMass, maxMass, minTime, maxTime);
             return Ok(res);
         }
 
@@ -77,26 +78,13 @@ namespace RestaurantMenu.Controllers
                 return Ok(res);
         }
 
-
-
-        //// all filters
-        ////GET: api/Menu/sort:Name/search_name:салат/search_descr_comp:весенний/min_mass:100/max_mass:300/min_time:4/max_time:30
-        //[HttpGet("sort:{sortOrder}/search_name:{searchName}/search_descr_comp:{searchDescrComp}/min_mass:{minMass}/max_mass:{maxMass}/min_time:{minTime}/max_time:{maxTime}")]
-        //public async Task<ActionResult<IEnumerable<DishDTO>>> GetAll
-        //    (string sortOrder = null, string searchName, string searchDescrComp, int minMass, int maxMass, int minTime, int maxTime)
-        //{
-        //    var res = await _dishService.GetSortedListFromDBAsync_3(sortOrder, searchName, searchDescrComp, minMass, maxMass, minTime, maxTime);
-        //    return Ok(res);
-        //}
-
-        //// searchName 
-        ////GET: api/Menu/sort:Name/search_name:весенний/min_mass:100/max_mass:300/min_time:4/max_time:30
-        //[HttpGet("sort={sortOrder}/searchName={searchName}/min_mass:{minMass}/max_mass:{maxMass}/min_time:{minTime}/max_time:{maxTime}")]
-        //public async Task<ActionResult<IEnumerable<DishDTO>>> GetFilteredByNameDishes(string sortOrder, string searchName, int minMass, int maxMass, int minTime, int maxTime)
-        //{
-        //    var res = await _dishService.GetSortedListFromDBAsync_3(sortOrder, searchName, null, minMass, maxMass, minTime, maxTime);
-        //    return Ok(res);
-        //}
+        [HttpPost]
+        [Route("filtered-dishes")]
+        public async Task<IActionResult> GetDishesAsync(int page = 1, FilterDefinition[] filters = null, SortDefinition[] sorts = null)
+        {
+            //var res = await _dishService.GetSortedFilteredListFromDBAsync(int page = 1, FilterDefinition[] filters, SortDefinition[] sorts);
+            return Ok();
+        }
 
 
         // POST: api/Menu
@@ -105,8 +93,24 @@ namespace RestaurantMenu.Controllers
         public async Task<IActionResult> AddDish(DishDTO dto)
         {
             if (dto == null)
-                return BadRequest(); 
-            var res = await _dishService.AddNewToDBAsync(dto);
+                return BadRequest();
+            var res = new OperationDetail();
+            if (ModelState.IsValid)
+            {
+                res = await _dishService.AddNewToDBAsync(dto);
+            }
+            else
+            {
+                res.Succeeded = false;
+                foreach (ModelStateEntry modelState in ModelState.Values)
+                {
+                    foreach (ModelError error in modelState.Errors)
+                    {
+                        res.ErrorMessages.Add(error.ErrorMessage);
+                    }
+                }
+            }
+            
             return Ok(res);
         }
 

@@ -1,54 +1,118 @@
 ﻿@page "/create"
 
 @inject HttpClient Http
+@inject NavigationManager navigationManager
 @using RestaurantMenu.ClientBlazorApp.Infrastructure
 @using RestaurantMenu.ClientBlazorApp.ViewModels
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
 
 <h4 class="text-black-50">Добавление нового блюда в меню</h4>
 
 <div class="form-group">
     <div class="form-group">
         <label>Название</label><br />
-        <input type="text" size="255" class="form-control col-3" placeholder="" />
+        <input type="text" size="255" class="form-control col-3" placeholder="" @bind=_model.Name />
     </div>
     <div class="form-group">
         <label>Состав</label><br />
-        <textarea type="text" rows="3" class="form-control col-3" placeholder=""></textarea>
+        <textarea type="text" rows="3" class="form-control col-3" placeholder="" @bind=_model.Composition></textarea>
     </div>
     <div class="form-group">
         <label>Описание</label><br />
-        <textarea type="text" rows="3" class="form-control col-3" placeholder=""></textarea>
+        <textarea type="text" rows="3" class="form-control col-3" placeholder="" @bind=_model.Description></textarea>
     </div>
     <div class="form-group">
         <label>Вес в граммах</label><br />
-        <input type="number" class="form-control col-3" placeholder="" />
+        <input type="number" class="form-control col-3" placeholder="" @bind=_model.Mass />
     </div>
     <div class="form-group">
         <label>Калорийность</label><br />
-        <input type="number" class="form-control col-3" placeholder="" />
+        <input type="number" class="form-control col-3" placeholder="" @bind=_model.CalorieContent />
     </div>
     <div class="form-group">
         <label>Время приготовления в минутах</label><br />
-        <input type="number" class="form-control col-3" placeholder="" />
+        <input type="number" class="form-control col-3" placeholder="" @bind=_model.CookingTime />
     </div>
     <div class="form-group">
         <label>Цена</label><br />
-        <input type="number" class="form-control col-3" placeholder="" />
+        <input type="number" class="form-control col-3" placeholder="" @bind=_model.Price />
     </div>
     <div>
-        <button class="btn btn-primary">Добавить блюдо</button>
-        <button class="btn btn-light">Отмена</button>
+        <button class="btn btn-primary" @onclick="(e => AddDish())">Добавить блюдо</button>
+        <button class="btn btn-light" @onclick="(e => GetMenu())">Отмена</button>
     </div>
 </div>
 
 
 
 @code {
-    private DishViewModel _model;
+    private DishViewModel _model { get; set; } = new DishViewModel();
+    private System.Net.HttpStatusCode? _responseStatusCode;
 
-    private void PostModel()
+    private string postURI = "https://localhost:44318/api/menu";
+
+    private async Task AddDish()
     {
+        await Http.PostJsonAsync(postURI + "/dish/add", _model);
 
+        await GetMenu();
+
+    }
+
+    //private async Task PostDish()
+    //{
+    //    _responseStatusCode = null;
+
+    //    try
+    //    {
+    //        var requestMessage = new HttpRequestMessage()
+    //        {
+    //            Method = new HttpMethod("POST"),
+    //            RequestUri = new Uri(postURI),
+    //            Content = string.IsNullOrEmpty(/*_model*/) ? null : new StringContent(_requestBody)
+    //        };
+
+    //        foreach (var header in _requestHeaders)
+    //        {
+    //            // StringContent automatically adds its own Content-Type header with default value "text/plain"
+    //            // If the developer is trying to specify a content type explicitly, we need to replace the default value,
+    //            // rather than adding a second Content-Type header.
+    //            if (header.Name.Equals("Content-Type", StringComparison.OrdinalIgnoreCase) && requestMessage.Content != null)
+    //            {
+    //                requestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(header.Value);
+    //                continue;
+    //            }
+
+    //            if (!requestMessage.Headers.TryAddWithoutValidation(header.Name, header.Value))
+    //            {
+    //                requestMessage.Content?.Headers.TryAddWithoutValidation(header.Name, header.Value);
+    //            }
+    //        }
+
+    //        var response = await Http.SendAsync(requestMessage);
+    //        _responseStatusCode = response.StatusCode;
+    //        _responseBody = await response.Content.ReadAsStringAsync();
+    //        var allHeaders = response.Headers.Concat(response.Content?.Headers ?? Enumerable.Empty<KeyValuePair<string, IEnumerable<string>>>());
+    //        _responseHeaders = string.Join(Environment.NewLine, allHeaders.Select(pair => $"{pair.Key}: {pair.Value.First()}").ToArray());
+    //    }
+
+    //    catch (Exception ex)
+    //    {
+    //        if (ex is AggregateException)
+    //        {
+    //            ex = ex.InnerException;
+    //        }
+    //        _responseStatusCode = System.Net.HttpStatusCode.SeeOther;
+    //        _responseBody = ex.Message + Environment.NewLine + ex.StackTrace;
+    //    }
+
+    //    StateHasChanged();
+    //}
+
+
+    private async Task GetMenu()
+    {
+        navigationManager.NavigateTo("/");
     }
 
 }

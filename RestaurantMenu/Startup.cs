@@ -80,6 +80,9 @@ namespace RestaurantMenu
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                //endpoints.MapControllerRoute(
+                    
+                //    );
             });   
         }
     }
