@@ -32,8 +32,8 @@ namespace RestaurantMenu
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContextPool<MenuDBContext>( optionsBuilder =>
-            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContextPool<MenuDBContext>( optionsBuiller =>
+            optionsBuiller.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddCors(options =>
             {
@@ -67,11 +67,16 @@ namespace RestaurantMenu
                 app.UseHsts();
             }
 
+
             app.UseCors(MyAllowSpecificOrigins);
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+
+
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

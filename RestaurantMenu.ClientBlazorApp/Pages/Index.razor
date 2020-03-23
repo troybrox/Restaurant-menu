@@ -102,8 +102,10 @@ else
                         <input type="number" id="MaxTime" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_maxTime" />
                     </div>
                 </div>
-
-                <button class="btn btn-primary" @onclick="(e => FilterMenuAsync(searchNameString, searchDescrCompString))">Применить</button>
+                <div>
+                    <button class="btn btn-primary" @onclick="(e => FilterMenuAsync(searchNameString, searchDescrCompString))">Применить</button>
+                    <button class="btn btn-light" @onclick="(e => ClearFiltersAsync())">Сбросить фильтры</button>
+                </div>
             </div>
         </div>
     </div>
@@ -366,7 +368,6 @@ else
         string minTimeString = "";
         string maxTimeString = "";
 
-
         if (String.IsNullOrEmpty(sortOrder))
         {
             sortOrder = "Id";
@@ -477,7 +478,6 @@ else
 
     private async Task OrderMenuBy(string sortOrderParameter)
     {
-        //sortOrder = "";
         string xsortOrder = "";
         xsortOrder = sortOrder;
 
@@ -516,33 +516,15 @@ else
         await OnInitializedAsync();
     }
 
-    private void OrderMenuLink(string sortOrderParameter)
+    private async Task ClearFiltersAsync()
     {
-        string xsortOrder = "";
-        xsortOrder = sortOrder;
-
-        if (sortOrder.EndsWith("_desc"))
-        {
-            if (sortOrderParameter == xsortOrder.Substring(0, sortOrder.Length - 5))
-            {
-                sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
-            }
-            else
-            {
-                sortOrder = sortOrderParameter;
-            }
-        }
-        else
-        {
-            if (sortOrderParameter == sortOrder)
-            {
-                sortOrder = sortOrder += "_desc";
-            }
-            else
-            {
-                sortOrder = sortOrderParameter;
-            }
-        }
+        searchNameString = "";
+        searchDescrCompString = "";
+        _minMass = 0;
+        _maxMass = 0;
+        _minTime = 0;
+        _maxTime = 0;
+        await OnInitializedAsync();
     }
 
     // todo: minutes -> hours.minutes
