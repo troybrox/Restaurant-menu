@@ -285,29 +285,6 @@ namespace RestaurantMenu.BLL.Services
                 var dtoList = new List<DishDTO>();
                 var dishes = from d in _context.Dishes select d;
 
-                //string currentFilter = searchString;
-                //if (!String.IsNullOrEmpty(searchString))
-                //{
-                //    dishes = dishes.Where(d => d.Name.ToUpper().Contains(searchString.ToUpper())
-                //                           || d.Description.ToUpper().Contains(searchString.ToUpper())
-                //                           || d.Composition.ToUpper().Contains(searchString.ToUpper()));
-                //}
-
-                //string currentFilter = searchName;
-
-                //if (!String.IsNullOrEmpty(searchName))
-                //{
-                //    dishes = dishes.Where(d => d.Name.ToUpper().Contains(searchName.ToUpper()));
-                //}
-                //if (!String.IsNullOrEmpty(searchDescr))
-                //{
-                //    dishes = dishes.Where(d => d.Description.ToUpper().Contains(searchDescr.ToUpper()));
-                //}
-                //if (!String.IsNullOrEmpty(searchComp))
-                //{
-                //    dishes = dishes.Where(d => d.Composition.ToUpper().Contains(searchComp.ToUpper()));
-                //}
-
                 if (!String.IsNullOrEmpty(searchName))
                 {
                     dishes = dishes.Where(d => d.Name.ToUpper().Contains(searchName.ToUpper()));
