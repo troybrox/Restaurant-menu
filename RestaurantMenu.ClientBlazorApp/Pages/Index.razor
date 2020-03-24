@@ -75,35 +75,35 @@ else
                 <p>Фильтры:</p>
                 <div class="form-group">
                     <label>Название блюда</label><br />
-                    <input type="text" name="SearchNameString" class="form-control col-3" placeholder="" @bind="searchNameString"/>
+                    <input type="text" name="SearchNameString" class="form-control col-3" placeholder="" @bind="SearchNameString"/>
                 </div>
                 <div class="form-group">
                     <label>Описание и состав</label><br />
-                    <input type="text" name="SearchDescrCompString" class="form-control col-3" placeholder="" @bind="searchDescrCompString" />
+                    <input type="text" name="SearchDescrCompString" class="form-control col-3" placeholder="" @bind="SearchDescrCompString" />
                 </div>
                 <div class="form-row">
                     <div class="col-4 form-group">
                         <label for="MinMass">Минимальный вес порции</label><br />
-                        <input type="number" id="MinMass" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_minMass" />
+                        <input type="number" id="MinMass" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="MinMass" />
                     </div>
                     <div class="col-4 form-group">
                         <label for="MaxMass">Максимальный вес порции</label><br />
-                        <input type="number" id="MaxMass" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_maxMass" />
+                        <input type="number" id="MaxMass" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="MaxMass" />
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="col-4 form-group">
                         <label for="MinTime">Минимальное время готовки</label><br />
-                        <input type="number" id="MinTime" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_minTime" />
+                        <input type="number" id="MinTime" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="MinTime" />
                     </div>
                     <div class="col-4 form-group">
                         <label for="MaxTime">Максимальное время готовки</label><br />
-                        <input type="number" id="MaxTime" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="_maxTime" />
+                        <input type="number" id="MaxTime" class="form-control col-3" placeholder=".col-6 .col-sm-4" @bind="MaxTime" />
                     </div>
                 </div>
                 <div>
-                    <button class="btn btn-primary" @onclick="(e => FilterMenuAsync(searchNameString, searchDescrCompString))">Применить</button>
+                    <button class="btn btn-primary" @onclick="(e => FilterMenuAsync(SearchNameString, SearchDescrCompString))">Применить</button>
                     <button class="btn btn-light" @onclick="(e => ClearFiltersAsync())">Сбросить фильтры</button>
                 </div>
             </div>
@@ -134,10 +134,10 @@ else
                                     </div>
                                     <div>
                                         @{
-                                            if (sortOrder.Contains("Name"))
+                                            if (SortName.Contains("Name"))
                                             {
                                                 <a>
-                                                    Отсортировано: @_indicateSort
+                                                    Отсортировано: @IndicateSort
                                                 </a>
                                             }
                                         }
@@ -154,9 +154,9 @@ else
                                     </div>
                                     <div>
                                         @{
-                                            if (sortOrder.Contains("Description"))
+                                            if (SortName.Contains("Description"))
                                             {
-                                                <a>Отсортировано: @_indicateSort</a>
+                                                <a>Отсортировано: @IndicateSort</a>
                                             }
                                         }
                                     </div>
@@ -172,9 +172,9 @@ else
                                     </div>
                                     <div>
                                         @{
-                                            if (sortOrder.Contains("Composition"))
+                                            if (SortName.Contains("Composition"))
                                             {
-                                                <a>Отсортировано: @_indicateSort</a>
+                                                <a>Отсортировано: @IndicateSort</a>
                                             }
                                         }
                                     </div>
@@ -190,9 +190,9 @@ else
                                     </div>
                                     <div>
                                         @{
-                                            if (sortOrder.Contains("AddingDate"))
+                                            if (SortName.Contains("AddingDate"))
                                             {
-                                                <a>Отсортировано: @_indicateSort</a>
+                                                <a>Отсортировано: @IndicateSort</a>
                                             }
                                         }
                                     </div>
@@ -208,9 +208,9 @@ else
                                     </div>
                                     <div>
                                         @{
-                                            if (sortOrder.Contains("CalorieContent"))
+                                            if (SortName.Contains("CalorieContent"))
                                             {
-                                                <a>Отсортировано: @_indicateSort</a>
+                                                <a>Отсортировано: @IndicateSort</a>
                                             }
                                         }
                                     </div>
@@ -226,9 +226,9 @@ else
                                     </div>
                                     <div>
                                         @{
-                                            if (sortOrder.Contains("CookingTime"))
+                                            if (SortName.Contains("CookingTime"))
                                             {
-                                                <a>Отсортировано: @_indicateSort</a>
+                                                <a>Отсортировано: @IndicateSort</a>
                                             }
                                         }
                                     </div>
@@ -244,9 +244,9 @@ else
                                     </div>
                                     <div>
                                         @{
-                                            if (sortOrder.Contains("Mass"))
+                                            if (SortName.Contains("Mass"))
                                             {
-                                                <a>Отсортировано: @_indicateSort</a>
+                                                <a>Отсортировано: @IndicateSort</a>
                                             }
                                         }
                                     </div>
@@ -262,9 +262,9 @@ else
                                     </div>
                                     <div>
                                         @{
-                                            if (sortOrder.Contains("Price"))
+                                            if (SortName.Contains("Price"))
                                             {
-                                                <a>Отсортировано: @_indicateSort</a>
+                                                <a>Отсортировано: @IndicateSort</a>
                                             }
                                         }
                                     </div>
@@ -327,22 +327,33 @@ else
 @code {
 
     [Parameter]
-    public string sortOrder { get; set; } = "";
-    [Parameter]
-    public string searchNameString { get; set; } = "";
-    [Parameter]
-    public string searchDescrCompString { get; set; } = "";
+    public string SortName { get; set; } = "";
 
     [Parameter]
-    public int _minMass { get; set; }
-    [Parameter]
-    public int _maxMass { get; set; }
-    [Parameter]
-    public int _minTime { get; set; }
-    [Parameter]
-    public int _maxTime { get; set; }
+    public bool SortIsAscending { get; set; }
 
-    public string _indicateSort { get; set; }
+    [Parameter]
+    public string SearchNameString { get; set; } = "";
+
+    [Parameter]
+    public string SearchDescrCompString { get; set; } = "";
+
+    [Parameter]
+    public int MinMass { get; set; }
+
+    [Parameter]
+    public int MaxMass { get; set; }
+
+    [Parameter]
+    public int MinTime { get; set; }
+
+    [Parameter]
+    public int MaxTime { get; set; }
+
+    [Parameter]
+    public static int PageIndex { get; set; } = 1;
+
+    public string IndicateSort { get; set; }
 
     private string _sortIndLetterAsc { get; set; } = "А..Я";
     private string _sortIndLetterDesc { get; set; } = "Я..А";
@@ -361,60 +372,94 @@ else
     protected override async Task OnInitializedAsync()
     {
         string uriPath = "https://localhost:44318/api/menu";
+
+        string uriPostMethod = "https://localhost:44318/api/menu/filtered-dishes";
+
         RequestResult<List<DishViewModel>> requestResult;
+
+        SortDefinition sort = new SortDefinition();
+
+        List<FilterDefinition> filters = new List<FilterDefinition>();
 
         string minMassString = "";
         string maxMassString = "";
         string minTimeString = "";
         string maxTimeString = "";
 
-        if (String.IsNullOrEmpty(sortOrder))
+        if (String.IsNullOrEmpty(SortName))
         {
-            sortOrder = "Id";
+            sort.Name = "Id";
+            sort.IsAsc = true;
         }
 
-        uriPath = uriPath + "/sort:" + sortOrder;
-
-        if (!String.IsNullOrEmpty(searchNameString))
+        if (!String.IsNullOrEmpty(SearchDescrCompString))
         {
-            uriPath = uriPath + "/search_name:" + searchNameString;
+            filters.Add(
+                new FilterDefinition
+                {
+                    Name = "DescrComp",
+                    Value = SearchDescrCompString
+                });
         }
 
-        if (!String.IsNullOrEmpty(searchDescrCompString))
+        if (MinMass > 0)
         {
-            uriPath = uriPath + "/search_descr_comp:" + searchDescrCompString;
-        }
-
-        if (_minMass > 0)
-        {
-            minMassString = _minMass.ToString();
+            filters.Add(
+                new FilterDefinition
+                {
+                    Name = "MinMass",
+                    Value = MinMass.ToString()
+                });
         }
         else
             minMassString = "0";
 
-        if (_maxMass > 0)
+        if (MaxMass > 0)
         {
-            maxMassString = _maxMass.ToString();
+            filters.Add(
+                new FilterDefinition
+                {
+                    Name = "MaxMass",
+                    Value = MaxMass.ToString()
+                });
         }
         else
             maxMassString = "0";
 
-        if (_minTime > 0)
+        if (MinTime > 0)
         {
-            minTimeString = _minTime.ToString();
+            filters.Add(
+                new FilterDefinition
+                {
+                    Name = "MinTime",
+                    Value = MinTime.ToString()
+                });
         }
         else
             minTimeString = "0";
 
-        if (_maxTime > 0)
+        if (MaxTime > 0)
         {
-            maxTimeString = _maxTime.ToString();
+            filters.Add(
+                new FilterDefinition
+                {
+                    Name = "MaxTime",
+                    Value = MaxTime.ToString()
+                });
         }
         else
             maxTimeString = "0";
 
-        uriPath = uriPath + "/min_mass:" + minMassString + "/max_mass:" + maxMassString + "/min_time:" + minTimeString + "/max_time:" + maxTimeString;
-        requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>(uriPath);
+
+        requestResult = await Http.SendJsonAsync<RequestResult<List<DishViewModel>>>
+            (HttpMethod.Post,
+            uriPostMethod,
+            new MenuRequestObject
+            {
+                PageIndex = PageIndex,
+                Sort = sort,
+                Filters = filters
+            });
 
         if (requestResult.Succeeded)
         {
@@ -428,24 +473,24 @@ else
         SetSortIndicate();
     }
 
-    // sort-indicationg
+    // todo: sort-indication
     private string SetSortIndicate()
     {
         string _sortIndicate = "";
-        if (!String.IsNullOrEmpty(sortOrder))
+        if (!String.IsNullOrEmpty(SortName))
         {
-            if (!sortOrder.EndsWith("_desc"))
+            if (!SortName.EndsWith("_desc"))
             {
-                if (sortOrder == "Name" || sortOrder == "Description" || sortOrder == "Composition")
+                if (SortName == "Name" || SortName == "Description" || SortName == "Composition")
                 {
                     _sortIndicate = _sortIndLetterAsc;
                 }
-                else if (sortOrder == "Price" || sortOrder == "Mass" || sortOrder == "CalorieContent" ||
-                    sortOrder == "CookingTime")
+                else if (SortName == "Price" || SortName == "Mass" || SortName == "CalorieContent" ||
+                    SortName == "CookingTime")
                 {
                     _sortIndicate = _sortIndSymbolsAsc;
                 }
-                else if (sortOrder == "AddingDate")
+                else if (SortName == "AddingDate")
                 {
                     _sortIndicate = _sortIndDateAsc;
                 }
@@ -453,7 +498,7 @@ else
             else
             {
                 string xOrder = "";
-                xOrder = sortOrder;
+                xOrder = SortName;
                 xOrder = xOrder.Substring(0, xOrder.Length - 5);
 
                 if (xOrder == "Name" || xOrder == "Description" || xOrder == "Composition")
@@ -472,64 +517,108 @@ else
             }
         }
 
-        _indicateSort = _sortIndicate;
+        IndicateSort = _sortIndicate;
         return (_sortIndicate);
     }
 
     private void OpenDetailAsync(string id) => navigationManager.NavigateTo("/menu/detail/" + id);
 
-    private async Task OrderMenuBy(string sortOrderParameter)
+    private async Task OrderMenuBy(string sortNameParam, bool isAscParam)
     {
-        string xsortOrder = "";
-        xsortOrder = sortOrder;
+        string xSortName = "";
+        xSortName = SortName;
 
-        if (sortOrder.EndsWith("_desc"))
+        if (!SortIsAscending)
         {
-            if (sortOrderParameter == xsortOrder.Substring(0, sortOrder.Length - 5))
+            if(sortNameParam == xSortName)
             {
-                sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
+                SortIsAscending = false;
             }
             else
             {
-                sortOrder = sortOrderParameter;
+                SortName = sortNameParam;
             }
         }
         else
         {
-            if (sortOrderParameter == sortOrder)
+            if(sortNameParam == SortName)
             {
-                sortOrder = sortOrder += "_desc";
+                SortIsAscending = false;
             }
             else
             {
-                sortOrder = sortOrderParameter;
+                SortName = sortNameParam;
             }
         }
-
-        // sort-indicating
 
         await OnInitializedAsync();
     }
 
+    //private async Task OrderMenuBy(string sortOrderParameter)
+    //{
+    //    string xsortOrder = "";
+    //    xsortOrder = sortOrder;
+
+    //    if (sortOrder.EndsWith("_desc"))
+    //    {
+    //        if (sortOrderParameter == xsortOrder.Substring(0, sortOrder.Length - 5))
+    //        {
+    //            sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
+    //        }
+    //        else
+    //        {
+    //            sortOrder = sortOrderParameter;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if (sortOrderParameter == sortOrder)
+    //        {
+    //            sortOrder = sortOrder += "_desc";
+    //        }
+    //        else
+    //        {
+    //            sortOrder = sortOrderParameter;
+    //        }
+    //    }
+
+    //    // sort-indicating
+
+    //    await OnInitializedAsync();
+    //}
+
     private async Task FilterMenuAsync(string name, string descComp)
     {
-        searchNameString = name;
-        searchDescrCompString = descComp;
+        SearchNameString = name;
+        SearchDescrCompString = descComp;
         await OnInitializedAsync();
     }
 
     private async Task ClearFiltersAsync()
     {
-        searchNameString = "";
-        searchDescrCompString = "";
-        _minMass = 0;
-        _maxMass = 0;
-        _minTime = 0;
-        _maxTime = 0;
+        SearchNameString = "";
+        SearchDescrCompString = "";
+        MinMass = 0;
+        MaxMass = 0;
+        MinTime = 0;
+        MaxTime = 0;
         await OnInitializedAsync();
     }
 
-    // todo: minutes -> hours.minutes
+    private void SetPage(bool IsNext)
+    {
+        // todo: check pages
+        if (IsNext)
+        {
+            PageIndex++;
+        }
+        else
+        {
+            PageIndex--;
+        }
+    }
+
+
     private string GetTimeByMinutes(int minutes)
     {
         int hourCount = 0;
@@ -557,4 +646,65 @@ else
     {
         return date.ToString("g");
     }
+
+
+    //if (String.IsNullOrEmpty(sortOrder))
+    //{
+    //    sortOrder = "Id";
+    //}
+
+    //uriPath = uriPath + "/sort:" + sortOrder;
+
+    //if (!String.IsNullOrEmpty(searchNameString))
+    //{
+    //    uriPath = uriPath + "/search_name:" + searchNameString;
+    //}
+
+    //if (!String.IsNullOrEmpty(searchDescrCompString))
+    //{
+    //    uriPath = uriPath + "/search_descr_comp:" + searchDescrCompString;
+    //}
+
+    //if (_minMass > 0)
+    //{
+    //    minMassString = _minMass.ToString();
+    //}
+    //else
+    //    minMassString = "0";
+
+    //if (_maxMass > 0)
+    //{
+    //    maxMassString = _maxMass.ToString();
+    //}
+    //else
+    //    maxMassString = "0";
+
+    //if (_minTime > 0)
+    //{
+    //    minTimeString = _minTime.ToString();
+    //}
+    //else
+    //    minTimeString = "0";
+
+    //if (_maxTime > 0)
+    //{
+    //    maxTimeString = _maxTime.ToString();
+    //}
+    //else
+    //    maxTimeString = "0";
+
+    //uriPath = uriPath + "/min_mass:" + minMassString + "/max_mass:" + maxMassString + "/min_time:" + minTimeString + "/max_time:" + maxTimeString;
+    //requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>(uriPath);
+
+    //if (requestResult.Succeeded)
+    //{
+    //    _isMenuSucceeded = true;
+    //    if ((_dishes = requestResult.Data) != null)
+    //    {
+    //        _isMenuNotEmpty = true;
+    //    }
+    //}
 }
+
+
+

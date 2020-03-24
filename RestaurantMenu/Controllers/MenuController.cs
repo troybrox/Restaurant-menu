@@ -80,10 +80,11 @@ namespace RestaurantMenu.Controllers
 
         [HttpPost]
         [Route("filtered-dishes")]
-        public async Task<IActionResult> GetDishesAsync(int page = 1, FilterDefinition[] filters = null, SortDefinition[] sorts = null)
+        public async Task<IActionResult> GetDishesAsync(int page = 1, SortDefinition sort = null, FilterDefinition[] filters = null)
         {
+            var res = new OperationDetail();
             //var res = await _dishService.GetSortedFilteredListFromDBAsync(int page = 1, FilterDefinition[] filters, SortDefinition[] sorts);
-            return Ok();
+            return Ok(res);
         }
 
 
