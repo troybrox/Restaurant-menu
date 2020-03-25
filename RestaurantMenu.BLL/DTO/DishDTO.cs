@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using RestaurantMenu.DAL.Entities;
 
 namespace RestaurantMenu.BLL.DTO
 {
@@ -32,5 +33,19 @@ namespace RestaurantMenu.BLL.DTO
         //[Required(ErrorMessage = "Введите время приготовления")]
         [Range(1, 99999, ErrorMessage = "Время приготовления должно быть в промежутке от 1 до 99999 минут")]
         public int CookingTime { get; set; }
+
+
+        public static DishDTO Map(Dish entity)  => new DishDTO
+        {
+            Id = entity.Id,
+            Name = entity.Name,
+            AddingDate = entity.AddingDate,
+            Price = entity.Price,
+            Composition = entity.Composition,
+            Mass = entity.Mass,
+            CalorieContent = entity.CalorieContent,
+            CookingTime = entity.CookingTime,
+            Description = entity.Description
+        };
     }
 }

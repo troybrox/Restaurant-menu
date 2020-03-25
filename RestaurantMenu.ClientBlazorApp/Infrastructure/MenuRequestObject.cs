@@ -12,5 +12,11 @@ namespace RestaurantMenu.ClientBlazorApp.Infrastructure
         public SortDefinition Sort { get; set; }
 
         public List<FilterDefinition> Filters { get; set; }
+
+
+        public MenuRequestObject()
+        {
+            Filters = new List<FilterDefinition>();
+        }
     }
 }

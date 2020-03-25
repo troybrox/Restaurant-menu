@@ -4,10 +4,8 @@ using System.Text;
 
 namespace RestaurantMenu.BLL.Infrastructure
 {
-    public class SortDefinition
+    public class FilterContract
     {
-        public string Name { get; set; }
-
-        public bool IsAscending { get; set; }
+        
     }
 }

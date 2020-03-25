@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using RestaurantMenu.BLL.Infrastructure;
+
 
 namespace RestaurantMenu.BLL.Infrastructure
 {
@@ -18,6 +20,13 @@ namespace RestaurantMenu.BLL.Infrastructure
         {
             ErrorMessages = new List<string>();
         }
+    }
+
+    public class ListOparationDetail<R> : OperationDetail<PaginatedList<R>>
+    {
+        public int TotalPages { get { return Data.TotalPages; } }
+
+        public int CurrentPage { get { return Data.PageIndex; } }
     }
 
 }

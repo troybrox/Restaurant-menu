@@ -8,6 +8,7 @@ namespace RestaurantMenu.ClientBlazorApp.Infrastructure
     public class SortDefinition
     {
         public string Name { get; set; }
-        public bool IsAsc  { get; set; }
+
+        public bool IsAscending { get; set; }
     }
 }

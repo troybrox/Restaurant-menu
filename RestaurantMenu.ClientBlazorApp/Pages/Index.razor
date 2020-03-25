@@ -321,6 +321,32 @@ else
             </center>
         </div>
 
+        @if (_dishes.Count() >= 20)
+        {
+            <div>
+                <button class="btn btn-light">Назад</button>
+                <button class="btn btn-light">Вперёд</button>
+            </div>
+        }
+    <div class="form-row">
+        @{
+            // todo: page-navigation
+            if (TotalPages >= 7)
+            {
+
+            }
+            else
+            {
+                for (int num = 1; num < TotalPages; num++)
+                {
+                    <a href>
+                        <span >@num</span>
+                    </a>
+                }
+            }
+        }
+    </div>
+
     </body>
 }
 
@@ -330,7 +356,7 @@ else
     public string SortName { get; set; } = "";
 
     [Parameter]
-    public bool SortIsAscending { get; set; }
+    public bool SortIsAscending { get; set; } = true;
 
     [Parameter]
     public string SearchNameString { get; set; } = "";
@@ -352,6 +378,11 @@ else
 
     [Parameter]
     public static int PageIndex { get; set; } = 1;
+
+    public static int TotalPages { get; set; } = 1;
+
+
+    private SortDefinition Sort { get; set; }
 
     public string IndicateSort { get; set; }
 
@@ -381,15 +412,25 @@ else
 
         List<FilterDefinition> filters = new List<FilterDefinition>();
 
-        string minMassString = "";
-        string maxMassString = "";
-        string minTimeString = "";
-        string maxTimeString = "";
-
         if (String.IsNullOrEmpty(SortName))
         {
             sort.Name = "Id";
-            sort.IsAsc = true;
+            sort.IsAscending = true;
+        }
+        else
+        {
+            sort.Name = SortName;
+            sort.IsAscending = SortIsAscending;
+        }
+
+        if (!String.IsNullOrEmpty(SearchNameString))
+        {
+            filters.Add(
+                new FilterDefinition
+                {
+                    Name = "Name",
+                    Value = SearchNameString
+                });
         }
 
         if (!String.IsNullOrEmpty(SearchDescrCompString))
@@ -411,8 +452,6 @@ else
                     Value = MinMass.ToString()
                 });
         }
-        else
-            minMassString = "0";
 
         if (MaxMass > 0)
         {
@@ -423,8 +462,6 @@ else
                     Value = MaxMass.ToString()
                 });
         }
-        else
-            maxMassString = "0";
 
         if (MinTime > 0)
         {
@@ -435,8 +472,6 @@ else
                     Value = MinTime.ToString()
                 });
         }
-        else
-            minTimeString = "0";
 
         if (MaxTime > 0)
         {
@@ -447,9 +482,6 @@ else
                     Value = MaxTime.ToString()
                 });
         }
-        else
-            maxTimeString = "0";
-
 
         requestResult = await Http.SendJsonAsync<RequestResult<List<DishViewModel>>>
             (HttpMethod.Post,
@@ -467,19 +499,24 @@ else
             if ((_dishes = requestResult.Data) != null)
             {
                 _isMenuNotEmpty = true;
+
+                // todo: PageIndex init from server
+                
             }
         }
 
         SetSortIndicate();
     }
 
-    // todo: sort-indication
+
+    // todo: page-click method
+
     private string SetSortIndicate()
     {
         string _sortIndicate = "";
         if (!String.IsNullOrEmpty(SortName))
         {
-            if (!SortName.EndsWith("_desc"))
+            if (SortIsAscending)
             {
                 if (SortName == "Name" || SortName == "Description" || SortName == "Composition")
                 {
@@ -497,20 +534,16 @@ else
             }
             else
             {
-                string xOrder = "";
-                xOrder = SortName;
-                xOrder = xOrder.Substring(0, xOrder.Length - 5);
-
-                if (xOrder == "Name" || xOrder == "Description" || xOrder == "Composition")
+                if (SortName == "Name" || SortName == "Description" || SortName == "Composition")
                 {
                     _sortIndicate = _sortIndLetterDesc;
                 }
-                else if (xOrder == "Price" || xOrder == "Mass" || xOrder == "CalorieContent" ||
-                    xOrder == "CookingTime")
+                else if (SortName == "Price" || SortName == "Mass" || SortName == "CalorieContent" ||
+                    SortName == "CookingTime")
                 {
                     _sortIndicate = _sortIndSymbolsDesc;
                 }
-                else if (xOrder == "AddingDate")
+                else if (SortName == "AddingDate")
                 {
                     _sortIndicate = _sortIndDateDesc;
                 }
@@ -523,7 +556,7 @@ else
 
     private void OpenDetailAsync(string id) => navigationManager.NavigateTo("/menu/detail/" + id);
 
-    private async Task OrderMenuBy(string sortNameParam, bool isAscParam)
+    private async Task OrderMenuBy(string sortNameParam)
     {
         string xSortName = "";
         xSortName = SortName;
@@ -532,11 +565,12 @@ else
         {
             if(sortNameParam == xSortName)
             {
-                SortIsAscending = false;
+                SortIsAscending = true;
             }
             else
             {
                 SortName = sortNameParam;
+                SortIsAscending = true;
             }
         }
         else
@@ -548,44 +582,12 @@ else
             else
             {
                 SortName = sortNameParam;
+                SortIsAscending = true;
             }
         }
 
         await OnInitializedAsync();
     }
-
-    //private async Task OrderMenuBy(string sortOrderParameter)
-    //{
-    //    string xsortOrder = "";
-    //    xsortOrder = sortOrder;
-
-    //    if (sortOrder.EndsWith("_desc"))
-    //    {
-    //        if (sortOrderParameter == xsortOrder.Substring(0, sortOrder.Length - 5))
-    //        {
-    //            sortOrder = sortOrder.Substring(0, sortOrder.Length - 5);
-    //        }
-    //        else
-    //        {
-    //            sortOrder = sortOrderParameter;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        if (sortOrderParameter == sortOrder)
-    //        {
-    //            sortOrder = sortOrder += "_desc";
-    //        }
-    //        else
-    //        {
-    //            sortOrder = sortOrderParameter;
-    //        }
-    //    }
-
-    //    // sort-indicating
-
-    //    await OnInitializedAsync();
-    //}
 
     private async Task FilterMenuAsync(string name, string descComp)
     {
@@ -618,7 +620,6 @@ else
         }
     }
 
-
     private string GetTimeByMinutes(int minutes)
     {
         int hourCount = 0;
@@ -647,63 +648,6 @@ else
         return date.ToString("g");
     }
 
-
-    //if (String.IsNullOrEmpty(sortOrder))
-    //{
-    //    sortOrder = "Id";
-    //}
-
-    //uriPath = uriPath + "/sort:" + sortOrder;
-
-    //if (!String.IsNullOrEmpty(searchNameString))
-    //{
-    //    uriPath = uriPath + "/search_name:" + searchNameString;
-    //}
-
-    //if (!String.IsNullOrEmpty(searchDescrCompString))
-    //{
-    //    uriPath = uriPath + "/search_descr_comp:" + searchDescrCompString;
-    //}
-
-    //if (_minMass > 0)
-    //{
-    //    minMassString = _minMass.ToString();
-    //}
-    //else
-    //    minMassString = "0";
-
-    //if (_maxMass > 0)
-    //{
-    //    maxMassString = _maxMass.ToString();
-    //}
-    //else
-    //    maxMassString = "0";
-
-    //if (_minTime > 0)
-    //{
-    //    minTimeString = _minTime.ToString();
-    //}
-    //else
-    //    minTimeString = "0";
-
-    //if (_maxTime > 0)
-    //{
-    //    maxTimeString = _maxTime.ToString();
-    //}
-    //else
-    //    maxTimeString = "0";
-
-    //uriPath = uriPath + "/min_mass:" + minMassString + "/max_mass:" + maxMassString + "/min_time:" + minTimeString + "/max_time:" + maxTimeString;
-    //requestResult = await Http.GetJsonAsync<RequestResult<List<DishViewModel>>>(uriPath);
-
-    //if (requestResult.Succeeded)
-    //{
-    //    _isMenuSucceeded = true;
-    //    if ((_dishes = requestResult.Data) != null)
-    //    {
-    //        _isMenuNotEmpty = true;
-    //    }
-    //}
 }
 
 
