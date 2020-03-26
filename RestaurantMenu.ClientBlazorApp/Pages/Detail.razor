@@ -65,18 +65,25 @@ else
 
     public static DishViewModel _model { get; set; }
 
+    private List<string> ErrorMessages { get; set; }
+
     private bool _isModelSucceeded = false;
     private bool _isModelNotEmpty = false;
 
+
     protected async override Task OnInitializedAsync()
     {
-        var requesResult = await Http.GetJsonAsync<RequestResult<DishViewModel>>
+        var requestResult = await Http.GetJsonAsync<RequestResult<DishViewModel>>
             ("https://localhost:44318/api/menu/dish/" + id.ToString());
-        if (requesResult.Succeeded)
+        if (requestResult.Succeeded)
         {
             _isModelSucceeded = true;
-            if ((_model = requesResult.Data) != null)
+            if ((_model = requestResult.Data) != null)
                 _isModelNotEmpty = true;
+        }
+        else
+        {
+            ErrorMessages = requestResult.ErrorMessages;
         }
     }
 

@@ -115,6 +115,7 @@
 
     private List<string> AddingDishErrorMessage { get; set; } = new List<string>();
 
+    private List<string> DishErrorMessages { get; set; }
 
     private const string getDishURI = "https://localhost:44318/api/menu/dish/";
     private const string updateDishURI = "https://localhost:44318/api/menu/dish/edit/";
@@ -122,10 +123,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        SortDefinition sort = new SortDefinition();
-
-        List<FilterDefinition> filters = new List<FilterDefinition>();
-
         var requestResult = await Http.GetJsonAsync<RequestResult<DishDTO>>
             (getDishURI + id.ToString());
 
@@ -134,11 +131,15 @@
             _isModelSucceeded = true;
             if ((_model = requestResult.Data) != null)
                 _isModelNotEmpty = true;
+
+            EditContext = new EditContext(_model);
+            EditContext.OnFieldChanged += EditContext_OnFieldChanged;
         }
-
-
-        EditContext = new EditContext(_model);
-        EditContext.OnFieldChanged += EditContext_OnFieldChanged;
+        else
+        {
+            DishErrorMessages = requestResult.ErrorMessages;
+        }
+        SetOkDisabledStatus();
     }
 
     private async Task UpdateDish()
@@ -185,14 +186,6 @@
 
             }
         }
-
-
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        SetOkDisabledStatus();
-        base.OnAfterRender(firstRender);
     }
 
     private void EditContext_OnFieldChanged(object sender, FieldChangedEventArgs e)
