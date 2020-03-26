@@ -75,7 +75,7 @@
                     <ValidationMessage For="@(() => _model.Price)" />
                 </div>
                 <div>
-                    <button class="btn btn-primary" disabled="@SaveDisabled" @onclick="(e => AddDish())">Добавить блюдо</button>
+                    <button class="btn btn-primary" disabled="@SaveDisabled" @onclick="(e => UpdateDish())">Добавить блюдо</button>
                     <button class="btn btn-light" @onclick="(e => GetMenu())">Отмена</button>
                 </div>
             </div>
@@ -100,31 +100,48 @@
 
 
 @code {
+    [Parameter]
+    public string id { get; set; }
+
     private DishDTO _model { get; set; } = new DishDTO();
+
     private EditContext EditContext;
-    protected string SaveDisabled { get; set; } = "disabled";
 
-    private System.Net.HttpStatusCode? _responseStatusCode;
-
+    protected string SaveDisabled { get; set; }
     private string ErrorMessage { get; set; } = "";
-
     public string ValidateMessage { get; set; } = "";
+    private bool _isModelSucceeded = false;
+    private bool _isModelNotEmpty = false;
 
     private List<string> AddingDishErrorMessage { get; set; } = new List<string>();
 
 
-    private const string postURI = "https://localhost:44318/api/menu";
+    private const string getDishURI = "https://localhost:44318/api/menu/dish/";
+    private const string updateDishURI = "https://localhost:44318/api/menu/dish/edit/";
 
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
+        SortDefinition sort = new SortDefinition();
+
+        List<FilterDefinition> filters = new List<FilterDefinition>();
+
+        var requestResult = await Http.GetJsonAsync<RequestResult<DishDTO>>
+            (getDishURI + id.ToString());
+
+        if (requestResult.Succeeded)
+        {
+            _isModelSucceeded = true;
+            if ((_model = requestResult.Data) != null)
+                _isModelNotEmpty = true;
+        }
+
+
         EditContext = new EditContext(_model);
         EditContext.OnFieldChanged += EditContext_OnFieldChanged;
-
-        return base.OnInitializedAsync();
     }
 
-    private async Task AddDish()
+    private async Task UpdateDish()
     {
         if (_model == null)
         {
@@ -136,7 +153,7 @@
         {
             try
             {
-                var requestResult = await Http.PostJsonAsync<RequestResult>(postURI + "/dish/add", _model);
+                var requestResult = await Http.PostJsonAsync<RequestResult>(updateDishURI + id, _model);
 
                 if (requestResult.Succeeded)
                 {

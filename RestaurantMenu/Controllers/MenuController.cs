@@ -91,8 +91,8 @@ namespace RestaurantMenu.Controllers
 
         // POST: api/Menu
         [HttpPost]
-        [Route("dish/delete/{id}")]
-        public async Task<ActionResult<DishDTO>> DeleteDish(int id)
+        [Route("dish/delete")]
+        public async Task<ActionResult<DishDTO>> DeleteDish([FromBody]int id)
         {
             var res = await _dishService.DeleteAsync(id);
             return Ok(res);
