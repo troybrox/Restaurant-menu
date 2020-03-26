@@ -27,6 +27,10 @@ else
                 <p form-control>@_model.Name</p>
             </div>
             <div class="form-group">
+                <label><b>Дата добавления в меню</b></label><br />
+                <p form-control>@GetDate(@_model.AddingDate) </p>
+            </div>
+            <div class="form-group">
                 <label><b>Состав</b></label><br />
                 <p>@_model.Composition</p>
             </div>
@@ -39,12 +43,12 @@ else
                 <p>@_model.Mass</p>
             </div>
             <div class="form-group">
-                <label><b>Калорийность</b></label><br />
-                <p>@_model.CalorieContent</p>
+                <label><b>Калорийность одной порции</b></label><br />
+                <p>@GetCalories(_model.CalorieContent, _model.Mass) кал</p>
             </div>
             <div class="form-group">
-                <label><b>Время приготовления в минутах</b></label><br />
-                <p>@_model.CookingTime</p>
+                <label><b>Время приготовления</b></label><br />
+                <p>@GetTimeByMinutes(_model.CookingTime)</p>
             </div>
             <div class="form-group">
                 <label><b>Цена</b></label><br />
@@ -75,5 +79,34 @@ else
             if ((_model = requesResult.Data) != null)
                 _isModelNotEmpty = true;
         }
+    }
+
+
+    private string GetTimeByMinutes(int minutes)
+    {
+        int hourCount = 0;
+        int minCount = 0;
+
+        if (minutes > 59)
+        {
+            hourCount = minutes / 60;
+            minCount = minutes - hourCount * 60;
+
+            return hourCount.ToString() + " час " + minCount.ToString() + " мин";
+        }
+        else
+        {
+            return minutes.ToString() + " мин";
+        }
+    }
+
+    private int GetCalories(decimal calContent, int mass)
+    {
+        return (int)calContent * mass / 100;
+    }
+
+    private string GetDate(DateTime date)
+    {
+        return date.ToString("g");
     }
 }
