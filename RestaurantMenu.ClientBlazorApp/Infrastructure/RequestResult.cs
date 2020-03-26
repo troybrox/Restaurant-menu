@@ -15,13 +15,13 @@ namespace RestaurantMenu.ClientBlazorApp.Infrastructure
     {
         public int TotalPages { get; set; }
 
-        public int CurrentPageIndex { get; set; }
+        public int PageIndex { get; set; }
 
         public bool HasPreviousPage
         {
             get
             {
-                return (CurrentPageIndex > 1);
+                return (PageIndex > 1);
             }
         }
 
@@ -29,7 +29,7 @@ namespace RestaurantMenu.ClientBlazorApp.Infrastructure
         {
             get
             {
-                return (CurrentPageIndex < TotalPages);
+                return (PageIndex < TotalPages);
             }
         }
     }

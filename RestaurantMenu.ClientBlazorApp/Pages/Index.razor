@@ -63,6 +63,18 @@
 @if (!_isMenuSucceeded)
 {
     <p><em>Loading...</em></p>
+    if (errorMessages != null)
+    {
+        <p>
+            <b>При загрузке меню произошли ошибки:</b>
+        </p>
+        foreach (var error in errorMessages)
+        {
+            <p>
+                @error
+            </p>
+        }
+    }
 }
 else
 {
@@ -75,7 +87,7 @@ else
                 <p>Фильтры:</p>
                 <div class="form-group">
                     <label>Название блюда</label><br />
-                    <input type="text" name="SearchNameString" class="form-control col-3" placeholder="" @bind="SearchNameString"/>
+                    <input type="text" name="SearchNameString" class="form-control col-3" placeholder="" @bind="SearchNameString" />
                 </div>
                 <div class="form-group">
                     <label>Описание и состав</label><br />
@@ -321,56 +333,13 @@ else
             </center>
         </div>
 
-        @*@if (_dishes.Count() >= 20)
-        {
-            <div>
-                <button class="btn btn-light">Назад</button>
-                <button class="btn btn-light">Вперёд</button>
-            </div>
-        }*@
-    <div class="form-row">
-        @{
-            // todo: page-navigation
-            if (TotalPages >= 7)
-            {
 
-                for (int num = 1; num == 3; num++)
-                {
-                    <a href>
-                        <span>@num</span>
-                        ,
-                    </a>
-                }
-                <a>
-                    ...,
-                </a>
-                for (int num = TotalPages - 3; num == TotalPages - 2; num++)
-                {
-                    <a href>
-                        <span>@num</span>
-                        ,
-                    </a>
-                }
-                <a href>
-                    <span>@TotalPages-1</span>
-                    ,
-                </a>
-                <a href>
-                    <span>@TotalPages</span>
-                    ,
-                </a>
-            }
-            else
-            {
-                for (int num = 1; num == TotalPages; num++)
-                {
-                    <a href>
-                        <span>@num</span>
-                    </a>
-                }
-            }
-        }
-    </div>
+        <div>
+            <button class="btn btn-light" disabled="@BtnBackDisable" @onclick="(e => PageBack())">Назад</button>
+            <button class="btn btn-light" disabled="@BtnNextDisable" @onclick="(e => PageNext())">Вперёд</button>
+            <a>Страница @CurrrentPageIndex из @TotalPages</a>
+        </div>
+
 
     </body>
 }
@@ -402,11 +371,36 @@ else
     public int MaxTime { get; set; }
 
     [Parameter]
-    public static int PageIndex { get; set; } = 1;
+    public static int PageIndexParam { get; set; }
 
-    public int TotalPages { get; set; } = 1;
+    public int TotalPages { get; set; }
     public int CurrrentPageIndex { get; set; } = 1;
 
+    ListRequestResult<List<DishViewModel>> requestResult;
+
+    private bool BtnNextDisable { get; set; }
+    private bool BtnBackDisable { get; set; }
+
+
+    public bool HasPreviousPage
+    {
+        get
+        {
+            return (CurrrentPageIndex > 1);
+        }
+    }
+
+    public bool HasNextPage
+    {
+        get
+        {
+            return (CurrrentPageIndex < TotalPages);
+        }
+    }
+
+
+
+    private List<string> errorMessages { get; set; }
 
     private SortDefinition Sort { get; set; }
 
@@ -431,8 +425,6 @@ else
         string uriPath = "https://localhost:44318/api/menu";
 
         string uriPostMethod = "https://localhost:44318/api/menu/filtered-dishes";
-
-        ListRequestResult<List<DishViewModel>> requestResult;
 
         SortDefinition sort = new SortDefinition();
 
@@ -514,7 +506,7 @@ else
             uriPostMethod,
             new MenuRequestObject
             {
-                PageIndex = PageIndex,
+                PageIndex = CurrrentPageIndex,
                 Sort = sort,
                 Filters = filters
             });
@@ -527,14 +519,20 @@ else
                 _isMenuNotEmpty = true;
 
                 TotalPages = requestResult.TotalPages;
+                BtnBackDisable = !requestResult.HasPreviousPage;
+                BtnNextDisable = !requestResult.HasNextPage;
             }
         }
 
+        else
+        {
+            errorMessages = requestResult.ErrorMessages;
+        }
+
         SetSortIndicate();
+        SetButtonDisable();
     }
 
-
-    // todo: page-click method
 
     private string SetSortIndicate()
     {
@@ -588,7 +586,7 @@ else
 
         if (!SortIsAscending)
         {
-            if(sortNameParam == xSortName)
+            if (sortNameParam == xSortName)
             {
                 SortIsAscending = true;
             }
@@ -600,7 +598,7 @@ else
         }
         else
         {
-            if(sortNameParam == SortName)
+            if (sortNameParam == SortName)
             {
                 SortIsAscending = false;
             }
@@ -632,25 +630,12 @@ else
         await OnInitializedAsync();
     }
 
-    private void SetPage(bool IsNext)
-    {
-        // todo: check pages
-        if (IsNext)
-        {
-            PageIndex++;
-        }
-        else
-        {
-            PageIndex--;
-        }
-    }
-
     private string GetTimeByMinutes(int minutes)
     {
         int hourCount = 0;
         int minCount = 0;
 
-        if(minutes > 59)
+        if (minutes > 59)
         {
             hourCount = minutes / 60;
             minCount = minutes - hourCount * 60;
@@ -663,6 +648,12 @@ else
         }
     }
 
+    private void SetButtonDisable()
+    {
+        BtnBackDisable = !(CurrrentPageIndex > 1);
+        BtnNextDisable = !(CurrrentPageIndex < TotalPages);
+    }
+
     private int GetCalories(decimal calContent, int mass)
     {
         return (int)calContent * mass / 100;
@@ -672,6 +663,25 @@ else
     {
         return date.ToString("g");
     }
+
+    private async Task PageNext()
+    {
+        CurrrentPageIndex++;
+        await OnInitializedAsync();
+    }
+
+    private async Task PageBack()
+    {
+        CurrrentPageIndex--;
+        await OnInitializedAsync();
+    }
+
+    private async Task PageNavigate(int num)
+    {
+        CurrrentPageIndex = num;
+        await OnInitializedAsync();
+    }
+
 
 }
 

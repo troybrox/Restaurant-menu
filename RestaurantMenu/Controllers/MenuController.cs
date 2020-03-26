@@ -48,7 +48,7 @@ namespace RestaurantMenu.Controllers
         [Route("filtered-dishes")]
         public async Task<IActionResult> GetDishesAsync([FromBody]MenuRequestModel model)
         {
-            var res = await _dishService.GetSortedFilteredListFromDBAsync(model.PageIndex, model.Sort, model.Filters);
+            var res = await _dishService.GetSortedFilteredListFromDBAsync( model.Sort, model.PageIndex, model.Filters);
 
             var test = JsonConvert.SerializeObject(res);
             return Ok(res);

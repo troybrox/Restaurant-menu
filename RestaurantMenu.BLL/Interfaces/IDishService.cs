@@ -12,7 +12,7 @@ namespace RestaurantMenu.BLL.Interfaces
         public Task<OperationDetail<List<DishDTO>>> GetAllFromDBAsync();
 
         public Task<OperationDetail<PaginatedList<DishDTO>>> GetSortedFilteredListFromDBAsync
-            (int? pageIndex, SortDefinition sort, FilterDefinition[] filters = null);
+            (SortDefinition sort, int? pageIndex, FilterDefinition[] filters = null);
 
         public Task<OperationDetail<DishDTO>> GetByIDAsync(int id);
 

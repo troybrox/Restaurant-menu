@@ -48,35 +48,6 @@ namespace RestaurantMenu.BLL.Services
                 return new OperationDetail { Succeeded = false, ErrorMessages = errorList };
             }
         }
-
-        //public async Task<OperationDetail> AddNewToDBAsync(DishModelDTO dto)
-        //{
-        //    try
-        //    {
-        //        DishDTOValidator.Validate(dto);
-        //    }
-        //    catch (ValidationException)
-        //    {
-        //        throw;
-        //    }
-
-        //    if (await _context.Dishes.AnyAsync(x => x.Name == dto.Name))
-        //        throw new ValidationException("Блюдо с таким названием уже существует");
-
-        //    try
-        //    {
-        //        await _context.Dishes.AddAsync(GetEntityFromDTO(dto));
-        //        await _context.SaveChangesAsync();
-        //        return new OperationDetail { Succeeded = true };
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        List<string> errorList = new List<string>();
-        //        errorList.Add("Ошибка при добавлении записи в базу данных: " + e.Message);
-        //        return new OperationDetail { Succeeded = false, ErrorMessages = errorList };
-        //    }
-        //}
-
         public async Task<OperationDetail> AddNewToDBAsync(DishModelDTO dto)
         {
             List<string> errorMessages = new List<string>();
@@ -251,9 +222,8 @@ namespace RestaurantMenu.BLL.Services
             }
         }
 
-
         public async Task<OperationDetail<PaginatedList<DishDTO>>> GetSortedFilteredListFromDBAsync
-            (int? pageIndex, SortDefinition sort, FilterDefinition[] filters = null)
+            (SortDefinition sort, int? pageIndex, FilterDefinition[] filters = null)
         {
             int pageSize = 20;
 
