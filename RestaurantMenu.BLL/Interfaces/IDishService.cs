@@ -18,7 +18,9 @@ namespace RestaurantMenu.BLL.Interfaces
 
         public Task<OperationDetail> AddNewToDBAsync(DishDTO dto);
 
-        public Task<OperationDetail> EditAsync(int id, DishDTO dto);
+        public Task<OperationDetail> AddNewToDBAsync(DishModelDTO dto);
+
+        public Task<OperationDetail> EditAsync(int id, DishModelDTO dto);
 
         public Task<OperationDetail> DeleteAsync(int id);
     }

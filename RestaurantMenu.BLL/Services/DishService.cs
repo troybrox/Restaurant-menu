@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using RestaurantMenu.BLL.DTO;
 using RestaurantMenu.BLL.Infrastructure;
 using RestaurantMenu.BLL.Interfaces;
+using RestaurantMenu.BLL.Exceptions;
+using RestaurantMenu.BLL.Validation;
 using RestaurantMenu.DAL.Data;
 using RestaurantMenu.DAL.Entities;
 
@@ -26,11 +28,85 @@ namespace RestaurantMenu.BLL.Services
         {
             try
             {
+                DishDTOValidator.Validate(dto);
+            }
+            catch (ValidationException)
+            {
+                throw;
+            }
+
+            try
+            {
                 await _context.Dishes.AddAsync(GetEntityFromDTO(dto));
                 await _context.SaveChangesAsync();
                 return new OperationDetail { Succeeded = true };
-            } 
+            }
             catch(Exception e)
+            {
+                List<string> errorList = new List<string>();
+                errorList.Add("Ошибка при добавлении записи в базу данных: " + e.Message);
+                return new OperationDetail { Succeeded = false, ErrorMessages = errorList };
+            }
+        }
+
+        //public async Task<OperationDetail> AddNewToDBAsync(DishModelDTO dto)
+        //{
+        //    try
+        //    {
+        //        DishDTOValidator.Validate(dto);
+        //    }
+        //    catch (ValidationException)
+        //    {
+        //        throw;
+        //    }
+
+        //    if (await _context.Dishes.AnyAsync(x => x.Name == dto.Name))
+        //        throw new ValidationException("Блюдо с таким названием уже существует");
+
+        //    try
+        //    {
+        //        await _context.Dishes.AddAsync(GetEntityFromDTO(dto));
+        //        await _context.SaveChangesAsync();
+        //        return new OperationDetail { Succeeded = true };
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        List<string> errorList = new List<string>();
+        //        errorList.Add("Ошибка при добавлении записи в базу данных: " + e.Message);
+        //        return new OperationDetail { Succeeded = false, ErrorMessages = errorList };
+        //    }
+        //}
+
+        public async Task<OperationDetail> AddNewToDBAsync(DishModelDTO dto)
+        {
+            List<string> errorMessages = new List<string>();
+
+            if(!DishDTOValidator.Validate(dto, out errorMessages))
+            {
+                return new OperationDetail
+                {
+                    Succeeded = false,
+                    ErrorMessages = errorMessages
+                };
+            }
+
+            if (await _context.Dishes.AnyAsync(x => x.Name == dto.Name))
+            {
+                errorMessages.Add("Блюдо с таким названием уже существует");
+                return new OperationDetail
+                {
+                    Succeeded = false,
+                    ErrorMessages = errorMessages
+                };
+            }    
+
+            try
+            {
+                await _context.Dishes.AddAsync(GetEntityFromDTO(dto));
+                await _context.SaveChangesAsync();
+                return new OperationDetail { Succeeded = true };
+            }
+            catch (Exception e)
             {
                 List<string> errorList = new List<string>();
                 errorList.Add("Ошибка при добавлении записи в базу данных: " + e.Message);
@@ -55,21 +131,47 @@ namespace RestaurantMenu.BLL.Services
             }
         }
 
-        public async Task<OperationDetail> EditAsync(int id, DishDTO dto)
+        public async Task<OperationDetail> EditAsync(int id, DishModelDTO dto)
         {
+            List<string> errorMessages = new List<string>();
+
+            if (!DishDTOValidator.Validate(dto, out errorMessages))
+            {
+                return new OperationDetail
+                {
+                    Succeeded = false,
+                    ErrorMessages = errorMessages
+                };
+            }
+
+            if (await _context.Dishes.AnyAsync(x => (x.Name.ToUpper() == dto.Name.ToUpper() && x.Id != id)))
+            {
+                errorMessages.Add("Блюдо с таким названием уже существует");
+                return new OperationDetail
+                {
+                    Succeeded = false,
+                    ErrorMessages = errorMessages
+                };
+            }
+
+            if (await _context.Dishes.AnyAsync(x => (x.Name == dto.Name && x.Id != id)))
+                throw new ValidationException("Блюдо с таким названием уже существует");
+
             try
             {
                 Dish entity = await _context.Dishes.FindAsync(id);
+
                 entity.Name = dto.Name;
-                entity.AddingDate = dto.AddingDate;
                 entity.Price = dto.Price;
                 entity.Composition = dto.Composition;
                 entity.Mass = dto.Mass;
                 entity.CalorieContent = dto.CalorieContent;
                 entity.CookingTime = dto.CookingTime;
                 entity.Description = dto.Description;
+
                 _context.Dishes.Update(entity);
                 await _context.SaveChangesAsync();
+
                 return new OperationDetail { Succeeded = true };
             }
             catch (Exception e)
@@ -168,11 +270,27 @@ namespace RestaurantMenu.BLL.Services
 
                 if (sort.IsAscending)
                 {
-                    dishes = dishes.OrderBy(e => EF.Property<object>(e, sort.Name));
+                    if(sort.Name == "CalorieContent")
+                    {
+                        dishes = dishes.OrderBy(e => (EF.Property<int>(e, sort.Name) * e.Mass / 100));
+                    }
+                    else
+                    {
+                        dishes = dishes.OrderBy(e => EF.Property<object>(e, sort.Name));
+                    }
+                    
                 }
                 else
                 {
-                    dishes = dishes.OrderByDescending(e => EF.Property<object>(e, sort.Name));
+                    if (sort.Name == "CalorieContent")
+                    {
+                        dishes = dishes.OrderByDescending(e => (EF.Property<int>(e, sort.Name)* e.Mass/100));
+                    }
+                    else
+                    {
+                        dishes = dishes.OrderByDescending(e => EF.Property<object>(e, sort.Name));
+                    }
+                    
                 }
 
                 if(filters != null)
@@ -240,6 +358,21 @@ namespace RestaurantMenu.BLL.Services
         }
 
         private Dish GetEntityFromDTO(DishDTO dto)
+        {
+            return new Dish
+            {
+                Name = dto.Name,
+                Price = dto.Price,
+                Composition = dto.Composition,
+                Mass = dto.Mass,
+                CalorieContent = dto.CalorieContent,
+                CookingTime = dto.CookingTime,
+                Description = dto.Description,
+                AddingDate = DateTime.Now
+            };
+        }
+
+        private Dish GetEntityFromDTO(DishModelDTO dto)
         {
             return new Dish
             {

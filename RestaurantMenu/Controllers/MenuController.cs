@@ -11,6 +11,8 @@ using RestaurantMenu.Models;
 using RestaurantMenu.BLL.DTO;
 using RestaurantMenu.BLL.Interfaces;
 using RestaurantMenu.BLL.Infrastructure;
+using RestaurantMenu.BLL.Validation;
+using RestaurantMenu.BLL.Exceptions;
 using Newtonsoft.Json;
 
 namespace RestaurantMenu.Controllers
@@ -55,28 +57,36 @@ namespace RestaurantMenu.Controllers
         // POST: api/Menu
         [HttpPost]
         [Route("dish/add")]
-        public async Task<IActionResult> AddDish(DishDTO dto)
+        public async Task<IActionResult> AddDish(DishModelDTO modelDTO)
         {
-            if (dto == null)
-                return BadRequest();
-            var res = new OperationDetail();
-            if (ModelState.IsValid)
+            List<string> errorMessages = new List<string>();
+
+            if(modelDTO == null)
             {
-                res = await _dishService.AddNewToDBAsync(dto);
-            }
-            else
-            {
+                var res = new OperationDetail();
                 res.Succeeded = false;
-                foreach (ModelStateEntry modelState in ModelState.Values)
-                {
-                    foreach (ModelError error in modelState.Errors)
-                    {
-                        res.ErrorMessages.Add(error.ErrorMessage);
-                    }
-                }
+                res.ErrorMessages = new List<string>();
+                res.ErrorMessages.Add
+                    ("Блюдо имело нулевые значения полей, для добавления блюда в меню заполните значения корректно");
+                return Ok(res);
             }
-            
-            return Ok(res);
+
+            try
+            {
+                var res = await _dishService.AddNewToDBAsync(modelDTO);
+                return Ok(res);
+            }
+            catch (Exception e)
+            {
+                errorMessages.Add(e.Message);
+                return Ok(new OperationDetail()
+                {
+                    Succeeded = false,
+                    ErrorMessages = errorMessages
+                });
+
+            }
+
         }
 
         // POST: api/Menu
@@ -91,7 +101,7 @@ namespace RestaurantMenu.Controllers
         // POST: api/Menu
         [HttpPost]
         [Route("dish/edit/{id}")]
-        public async Task<ActionResult<DishDTO>> EditDish(int id, DishDTO dto)
+        public async Task<ActionResult<DishDTO>> EditDish(int id, DishModelDTO dto)
         {
             if (dto == null)
                 return BadRequest();

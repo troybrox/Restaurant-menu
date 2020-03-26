@@ -321,26 +321,51 @@ else
             </center>
         </div>
 
-        @if (_dishes.Count() >= 20)
+        @*@if (_dishes.Count() >= 20)
         {
             <div>
                 <button class="btn btn-light">Назад</button>
                 <button class="btn btn-light">Вперёд</button>
             </div>
-        }
+        }*@
     <div class="form-row">
         @{
             // todo: page-navigation
             if (TotalPages >= 7)
             {
 
+                for (int num = 1; num == 3; num++)
+                {
+                    <a href>
+                        <span>@num</span>
+                        ,
+                    </a>
+                }
+                <a>
+                    ...,
+                </a>
+                for (int num = TotalPages - 3; num == TotalPages - 2; num++)
+                {
+                    <a href>
+                        <span>@num</span>
+                        ,
+                    </a>
+                }
+                <a href>
+                    <span>@TotalPages-1</span>
+                    ,
+                </a>
+                <a href>
+                    <span>@TotalPages</span>
+                    ,
+                </a>
             }
             else
             {
-                for (int num = 1; num < TotalPages; num++)
+                for (int num = 1; num == TotalPages; num++)
                 {
                     <a href>
-                        <span >@num</span>
+                        <span>@num</span>
                     </a>
                 }
             }
@@ -379,7 +404,8 @@ else
     [Parameter]
     public static int PageIndex { get; set; } = 1;
 
-    public static int TotalPages { get; set; } = 1;
+    public int TotalPages { get; set; } = 1;
+    public int CurrrentPageIndex { get; set; } = 1;
 
 
     private SortDefinition Sort { get; set; }
@@ -406,7 +432,7 @@ else
 
         string uriPostMethod = "https://localhost:44318/api/menu/filtered-dishes";
 
-        RequestResult<List<DishViewModel>> requestResult;
+        ListRequestResult<List<DishViewModel>> requestResult;
 
         SortDefinition sort = new SortDefinition();
 
@@ -483,7 +509,7 @@ else
                 });
         }
 
-        requestResult = await Http.SendJsonAsync<RequestResult<List<DishViewModel>>>
+        requestResult = await Http.SendJsonAsync<ListRequestResult<List<DishViewModel>>>
             (HttpMethod.Post,
             uriPostMethod,
             new MenuRequestObject
@@ -500,8 +526,7 @@ else
             {
                 _isMenuNotEmpty = true;
 
-                // todo: PageIndex init from server
-                
+                TotalPages = requestResult.TotalPages;
             }
         }
 
